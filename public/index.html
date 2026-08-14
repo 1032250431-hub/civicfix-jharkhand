@@ -17,6 +17,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const $ = (selector) => document.querySelector(selector);
 const CONFIG={url:"https://socmofnajiidydjauxvm.supabase.co",key:"sb_publishable_XzPZMJ0YwPLjAvV4KSCugA_e4xl1clr"};
 const configured=CONFIG.url.startsWith("https://")&&CONFIG.key.length>20;
 const sb=configured?window.supabase.createClient(CONFIG.url,CONFIG.key):null;
