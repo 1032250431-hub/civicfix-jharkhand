@@ -668,7 +668,12 @@ async function submitReport(e){
     const district = $("#district").value;
     const local_type = $("#localType").value;
 
-    const photoFile = $("#photo").files[0];
+    const photoInput = $("#photo");
+const photoFile = photoInput?.files?.[0] || null;
+
+if (!photoFile) {
+  throw new Error("Please attach a photo before submitting the complaint.");
+}
 
     const score =
       ({"Pothole / Road":65,
