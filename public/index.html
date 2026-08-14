@@ -92,7 +92,7 @@
 }
 @media(max-width:800px){.auth{grid-template-columns:1fr}.visual{padding:28px 20px 24px}.visual h1{font-size:43px}.authcard{padding:24px 18px}.hero{grid-template-columns:1fr;padding:18px}.cards{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.topin{padding:0 10px;gap:8px}.acct span{display:none}.page{padding:10px}.map{height:270px}.locrow{flex-direction:column}.locrow button{width:100%}}
 
-.support-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.support-card{background:#fff;border:1px solid #e0e7ef;border-radius:15px;padding:16px;box-shadow:0 6px 18px #14203308}.support-status{font-size:10px;font-weight:950;padding:5px 8px;border-radius:999px;background:#edf4ff;color:#1769e0}.support-status.resolved{background:#e8f8ef;color:#087a46}.support-status.in\ progress{background:#fff7e6;color:#9a5b00}.support-message{white-space:pre-wrap;color:#566274;font-size:13px;line-height:1.55}.support-reply{background:#f6f9fd;border:1px solid #e0e7ef;border-radius:11px;padding:10px;margin-top:10px;font-size:12px}.nav-support{color:#1769e0!important}@media(max-width:800px){.support-grid{grid-template-columns:1fr}}
+.support-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.support-card{background:#fff;border:1px solid #e0e7ef;border-radius:15px;padding:16px;box-shadow:0 6px 18px #14203308}.support-status{font-size:10px;font-weight:950;padding:5px 8px;border-radius:999px;background:#edf4ff;color:#1769e0}.support-status.resolved{background:#e8f8ef;color:#087a46}.support-status.in-progress{background:#fff7e6;color:#9a5b00}.support-message{white-space:pre-wrap;color:#566274;font-size:13px;line-height:1.55}.support-reply{background:#f6f9fd;border:1px solid #e0e7ef;border-radius:11px;padding:10px;margin-top:10px;font-size:12px}.nav-support{color:#1769e0!important}@media(max-width:800px){.support-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body><div id="app"></div>
@@ -142,15 +142,308 @@ function auth(){
 }
 
 function signup(){
- document.body.innerHTML=`<div class="auth"><section class="visual"><div class="eyebrow" style="color:#fff">JHARKHAND CIVIC PLATFORM</div><h1>Join CivicFix.</h1><p>Create a citizen account to report civic issues, track progress and contact CivicFix support when a case needs attention.</p><div class="flow"><b>Report</b><b>Track</b><b>Support</b><b>Verify</b></div></section><form class="authcard" id="signup"><div class="logo">C</div><h2>Create your account</h2><label>Full name<input id="name" type="text" placeholder="Your full name" required></label><label>Email<input id="semail" type="email" placeholder="you@example.com" required></label><label>Password<input id="spass" type="password" minlength="6" required></label><label>Confirm password<input id="sconfirm" type="password" minlength="6" required></label><div id="serr"></div><button class="primary wide">Create citizen account</button><button type="button" class="link" onclick="auth()">Already have an account? Sign in</button><div class="notice">Citizen accounts are available to residents. Staff accounts are provisioned separately for authorized personnel.</div></form></div>`;
- $("#signup").onsubmit=async e=>{e.preventDefault();const name=$("#name").value.trim(),email=$("#semail").value.trim(),pass=$("#spass").value,confirm=$("#sconfirm").value;if(pass!==confirm){$("#serr").innerHTML='<div class="error">Passwords do not match.</div>';return}const btn=e.submitter;btn.disabled=true;try{const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{name,role:"citizen"}}});if(error)throw error;if(data.session){state.session=data.session;await hydrate();render();return}$("#serr").innerHTML='<div class="notice">Your account has been created. Please check your email to confirm your account, then sign in.</div>';btn.disabled=false}catch(x){$("#serr").innerHTML='<div class="error">'+esc(x.message)+'</div>';btn.disabled=false}}
+  document.body.innerHTML=`
+    <div class="auth">
+      <section class="visual">
+        <div class="eyebrow" style="color:#fff">JHARKHAND CIVIC PLATFORM</div>
+        <h1>Join CivicFix.</h1>
+        <p>Create a citizen account to report civic issues, track progress and contact CivicFix support when a case needs attention.</p>
+        <div class="flow">
+          <b>Report</b>
+          <b>Track</b>
+          <b>Support</b>
+          <b>Verify</b>
+        </div>
+      </section>
+
+      <form class="authcard" id="signup">
+        <div class="logo">C</div>
+        <h2>Create your account</h2>
+
+        <label>
+          Full name
+          <input id="name" type="text" placeholder="Your full name" required>
+        </label>
+
+        <label>
+          Email
+          <input id="semail" type="email" placeholder="you@example.com" required>
+        </label>
+
+        <label>
+          Password
+          <input id="spass" type="password" minlength="6" required>
+        </label>
+
+        <label>
+          Confirm password
+          <input id="sconfirm" type="password" minlength="6" required>
+        </label>
+
+        <div id="serr"></div>
+
+        <button class="primary wide">
+          Create citizen account
+        </button>
+
+        <button type="button" class="link" onclick="auth()">
+          Already have an account? Sign in
+        </button>
+      </form>
+    </div>`;
+
+  $("#signup").onsubmit=async e=>{
+    e.preventDefault();
+
+    const name=$("#name").value.trim();
+    const email=$("#semail").value.trim();
+    const pass=$("#spass").value;
+    const confirm=$("#sconfirm").value;
+    const btn=e.submitter;
+
+    if(pass!==confirm){
+      $("#serr").innerHTML='<div class="error">Passwords do not match.</div>';
+      return;
+    }
+
+    if(pass.length<6){
+      $("#serr").innerHTML='<div class="error">Password must contain at least 6 characters.</div>';
+      return;
+    }
+
+    btn.disabled=true;
+    btn.textContent="Creating account...";
+
+    try{
+      const {data,error}=await sb.auth.signUp({
+        email,
+        password:pass,
+        options:{
+          data:{
+            name,
+            role:"citizen"
+          }
+        }
+      });
+
+      if(error) throw error;
+
+      if(data.session){
+        state.session=data.session;
+        await hydrate();
+        state.view="citizen";
+        render();
+        return;
+      }
+
+      $("#serr").innerHTML=
+        '<div class="error">Your account was created, but email confirmation is still enabled in the authentication settings. Please disable email confirmation in Supabase and try again.</div>';
+
+      btn.disabled=false;
+      btn.textContent="Create citizen account";
+
+    }catch(x){
+      $("#serr").innerHTML=
+        '<div class="error">'+esc(x.message)+'</div>';
+
+      btn.disabled=false;
+      btn.textContent="Create citizen account";
+    }
+  };
 }
-function nav(){return `<header class="top"><div class="topin"><div class="brand"><span class="logo">C</span>Civic<b>Fix</b></div><nav class="nav"><button class="${state.view==="citizen"?"active":""}" onclick="state.view='citizen';render()">Citizen</button>${state.profile.role==="admin"?`<button class="${state.view==="admin"?"active":""}" onclick="state.view='admin';render()">Admin</button>`:""}${state.profile.role==="worker"?`<button class="${state.view==="worker"?"active":""}" onclick="state.view='worker';render()">Worker</button>`:""}<button class="nav-support ${state.view==="support"?"active":""}" onclick="state.view='support';render()">Customer Care</button></nav><div class="acct"><span>${esc(state.profile.name)}</span><button class="ghost" onclick="logout()">Sign out</button></div></div></header>`}
-function render(){document.body.innerHTML=nav()+`<main class="page">${state.view==="citizen"?citizen():state.view==="admin"?admin():state.view==="worker"?worker():supportView()}</main>`;drawMap()}
+function nav(){
+
+  return `
+  <header class="top">
+
+    <div class="topin">
+
+      <div class="brand">
+        <span class="logo">C</span>
+        Civic<b>Fix</b>
+      </div>
+
+      <nav class="nav">
+
+        <button
+          class="${state.view==="citizen"?"active":""}"
+          onclick="state.view='citizen';render()">
+          Citizen
+        </button>
+
+        ${
+          state.profile.role==="admin"
+          ?
+          `<button
+            class="${state.view==="admin"?"active":""}"
+            onclick="state.view='admin';render()">
+            Admin
+          </button>`
+          :
+          ""
+        }
+
+        ${
+          state.profile.role==="worker"
+          ?
+          `<button
+            class="${state.view==="worker"?"active":""}"
+            onclick="state.view='worker';render()">
+            Worker
+          </button>`
+          :
+          ""
+        }
+
+        ${
+          state.profile.role==="citizen" ||
+          state.profile.role==="admin"
+          ?
+          `<button
+            class="nav-support ${state.view==="support"?"active":""}"
+            onclick="state.view='support';render()">
+            Customer Care
+          </button>`
+          :
+          ""
+        }
+
+      </nav>
+
+      <div class="acct">
+        <span>${esc(state.profile.name)}</span>
+        <button class="ghost" onclick="logout()">
+          Sign out
+        </button>
+      </div>
+
+    </div>
+
+  </header>`;
+}function render(){document.body.innerHTML=nav()+`<main class="page">${state.view==="citizen"?citizen():state.view==="admin"?admin():state.view==="worker"?worker():supportView()}</main>`;drawMap()}
 function citizen(){const x=state.complaints.filter(c=>c.citizen_id===state.session.user.id);return `<section class="hero"><div><div class="eyebrow">CITIZEN PORTAL</div><h1>Report what needs fixing.</h1><p>Photo + location + description. CivicFix converts a local problem into a trackable civic case.</p><button class="primary" onclick="report()">＋ Report an issue</button></div>${mapBox(x)}</section><section class="section"><h2>My reports</h2><p class="muted">Track every issue you have submitted.</p><div class="cards">${x.length?x.map(card).join(""):'<div class="empty">No reports yet. Your first civic report starts here.</div>'}</div></section>`}
 function admin(){const x=state.complaints;return `<section class="title"><div class="eyebrow">OPERATIONS</div><h1>Admin dashboard</h1><p>Live Jharkhand queue, priorities, duplicate signals and worker assignment.</p></section><div class="stats"><div class="stat"><b>${x.length}</b><span>Total</span></div><div class="stat"><b>${x.filter(c=>c.status==="Pending").length}</b><span>Pending</span></div><div class="stat"><b>${x.filter(c=>c.priority==="High").length}</b><span>High priority</span></div><div class="stat"><b>${x.filter(c=>c.status==="Resolved").length}</b><span>Resolved</span></div></div>${mapBox(x)}<section class="section"><div class="cards">${x.map(c=>card(c,true)).join("")||'<div class="empty">No complaints yet.</div>'}</div></section><section class="section"><div class="between"><div><h2>Customer Care</h2><p class="muted">Requests needing assistance from residents.</p></div><button class="secondary" onclick="state.view='support';render()">Open support queue</button></div></section>`}
 function worker(){const x=state.complaints.filter(c=>c.assigned_worker_id===state.profile.id||!c.assigned_worker_id);return `<section class="title"><div class="eyebrow">FIELD WORKER</div><h1>Work queue</h1><p>Open the case, navigate to the location and update progress from your phone.</p></section>${mapBox(x)}<section class="section"><div class="cards">${x.map(card).join("")||'<div class="empty">No assigned jobs.</div>'}</div></section>`}
-function card(c,admin=false){return `<article class="card"><div class="between"><div><b>${esc(c.category)}</b><div class="muted">${esc(c.area)} · ${esc(c.district||"Jharkhand")}</div></div><span class="pill ${String(c.priority).toLowerCase()}">${esc(c.priority)}</span></div><p>${esc(c.description)}</p><div class="meta"><span>${esc(c.department)}</span><span class="status ${String(c.status).toLowerCase()}">${esc(c.status)}</span><span>Score ${c.priority_score}/100</span>${c.duplicate_count>1?`<span>+${c.duplicate_count-1} similar</span>`:""}</div>${admin&&c.status==="Pending"?`<div class="actions"><button class="secondary" onclick="assign('${c.id}')">Assign worker</button></div>`:""}${state.profile.role==="worker"&&c.status==="Assigned"?`<div class="actions"><button class="primary" onclick="changeStatus('${c.id}','In Progress')">Start work</button></div>`:""}${state.profile.role==="worker"&&c.status==="In Progress"?`<div class="actions"><button class="primary" onclick="changeStatus('${c.id}','Resolved')">Mark resolved</button></div>`:""}${state.profile.role==="citizen"&&c.status==="Resolved"?`<div class="actions"><button class="primary" onclick="changeStatus('${c.id}','Verified')">Verify resolution</button></div>`:""}</article>`}
+function card(c,admin=false){
+
+  return `
+  <article class="card">
+
+    <div class="between">
+
+      <div>
+        <b>${esc(c.category)}</b>
+
+        <div class="muted">
+          ${esc(c.area)} · ${esc(c.district || "Jharkhand")}
+        </div>
+      </div>
+
+      <span class="pill ${String(c.priority).toLowerCase()}">
+        ${esc(c.priority)}
+      </span>
+
+    </div>
+
+    <p>${esc(c.description)}</p>
+
+    ${
+      c.photo_url
+      ?
+      `<div style="margin:12px 0">
+        <img
+          src="${esc(c.photo_url)}"
+          alt="Complaint evidence"
+          style="width:100%;max-height:280px;object-fit:cover;border-radius:12px;border:1px solid #e0e7ef"
+        >
+      </div>`
+      :
+      ""
+    }
+
+    <div class="meta">
+
+      <span>${esc(c.department)}</span>
+
+      <span class="status ${String(c.status).toLowerCase()}">
+        ${esc(c.status)}
+      </span>
+
+      <span>
+        Score ${c.priority_score}/100
+      </span>
+
+      ${
+        c.duplicate_count > 1
+        ?
+        `<span>+${c.duplicate_count-1} similar</span>`
+        :
+        ""
+      }
+
+    </div>
+
+    ${
+      admin && c.status === "Pending"
+      ?
+      `<div class="actions">
+        <button
+          class="secondary"
+          onclick="assign('${c.id}')">
+          Assign worker
+        </button>
+      </div>`
+      :
+      ""
+    }
+
+    ${
+      state.profile.role === "worker" &&
+      c.status === "Assigned"
+      ?
+      `<div class="actions">
+        <button
+          class="primary"
+          onclick="changeStatus('${c.id}','In Progress')">
+          Start work
+        </button>
+      </div>`
+      :
+      ""
+    }
+
+    ${
+      state.profile.role === "worker" &&
+      c.status === "In Progress"
+      ?
+      `<div class="actions">
+        <button
+          class="primary"
+          onclick="changeStatus('${c.id}','Resolved')">
+          Mark resolved
+        </button>
+      </div>`
+      :
+      ""
+    }
+
+    ${
+      state.profile.role === "citizen" &&
+      c.status === "Resolved"
+      ?
+      `<div class="actions">
+        <button
+          class="primary"
+          onclick="changeStatus('${c.id}','Verified')">
+          Verify resolution
+        </button>
+      </div>`
+      :
+      ""
+    }
+
+  </article>`;
+}
 function mapBox(items){return `<div class="mapbox"><div class="maphead"><b>Live civic map</b><span>${items.filter(c=>c.latitude!=null&&c.longitude!=null).length} GPS-tagged</span></div><div id="map" class="map"></div></div>`}
 function drawMap(){
  const el=$("#map");if(!el)return;
@@ -169,7 +462,82 @@ function supportView(){
  const mine=state.support||[]; const isAdmin=state.profile.role==="admin";
  return `<section class="title"><div class="eyebrow">CUSTOMER CARE</div><h1>How can we help?</h1><p>Contact CivicFix when a reported issue is not progressing, needs clarification, or you need assistance with a civic service.</p><button class="primary" onclick="openSupport()">Contact Customer Care</button></section><section class="section"><div class="support-grid">${mine.length?mine.map(t=>supportCard(t,isAdmin)).join(""):'<div class="empty">No support requests yet. If a civic issue needs attention, contact Customer Care.</div>'}</div></section>`;
 }
-function supportCard(t,admin=false){return `<article class="support-card"><div class="between"><div><b>${esc(t.subject)}</b><div class="muted">${esc(t.complaints?.category||"General assistance")} ${t.complaints?.area?`· ${esc(t.complaints.area)}`:""}</div></div><span class="support-status ${String(t.status).toLowerCase()}">${esc(t.status)}</span></div><p class="support-message">${esc(t.message)}</p><div class="meta"><span>Request ${esc(String(t.id).slice(0,8))}</span><span>${new Date(t.created_at).toLocaleString()}</span></div>${t.admin_response?`<div class="support-reply"><b>CivicFix response</b><br>${esc(t.admin_response)}</div>`:""}${admin&&t.status!=="Resolved"?`<div class="actions"><button class="secondary" onclick="respondSupport('${t.id}')">Respond</button></div>`:""}</article>`}
+function supportCard(t,admin=false){
+
+  const statusClass =
+    String(t.status || "")
+      .toLowerCase()
+      .replace(/\s+/g,"-");
+
+  return `
+  <article class="support-card">
+
+    <div class="between">
+
+      <div>
+        <b>${esc(t.subject)}</b>
+
+        <div class="muted">
+          ${esc(t.complaints?.category || "General assistance")}
+          ${
+            t.complaints?.area
+            ?
+            ` · ${esc(t.complaints.area)}`
+            :
+            ""
+          }
+        </div>
+      </div>
+
+      <span class="support-status ${statusClass}">
+        ${esc(t.status)}
+      </span>
+
+    </div>
+
+    <p class="support-message">
+      ${esc(t.message)}
+    </p>
+
+    <div class="meta">
+
+      <span>
+        Request ${esc(String(t.id).slice(0,8))}
+      </span>
+
+      <span>
+        ${new Date(t.created_at).toLocaleString()}
+      </span>
+
+    </div>
+
+    ${
+      t.admin_response
+      ?
+      `<div class="support-reply">
+        <b>CivicFix response</b><br>
+        ${esc(t.admin_response)}
+      </div>`
+      :
+      ""
+    }
+
+    ${
+      admin && t.status !== "Resolved"
+      ?
+      `<div class="actions">
+        <button
+          class="secondary"
+          onclick="respondSupport('${t.id}')">
+          Respond
+        </button>
+      </div>`
+      :
+      ""
+    }
+
+  </article>`;
+}
 function openSupport(){
  const options=(state.complaints||[]).filter(c=>c.citizen_id===state.session.user.id).map(c=>`<option value="${c.id}">${esc(c.category)} — ${esc(c.area)} (${esc(c.status)})</option>`).join("");
  document.body.insertAdjacentHTML("beforeend",`<div class="modal" id="supportModal"><form class="modalcard" id="supportForm"><button type="button" class="close" onclick="closeSupport()">×</button><div class="eyebrow">CUSTOMER CARE</div><h2>Contact CivicFix</h2><p class="muted">Tell us what needs attention and our support team can review the request.</p><label>Related complaint<select id="supportComplaint"><option value="">General assistance</option>${options}</select></label><label>Subject<input id="supportSubject" maxlength="120" placeholder="What do you need help with?" required></label><label>Message<textarea id="supportMessage" rows="6" maxlength="2000" placeholder="Describe the issue or what you need assistance with." required></textarea></label><div id="supportErr"></div><button class="primary wide">Send request</button></form></div>`);
@@ -287,14 +655,108 @@ function closeReport(){
 let gpsCoords=null;
 function useGPS(){const box=$("#gpsmsg");box.style.display="block";if(!navigator.geolocation){box.textContent="This device does not support GPS.";return}box.textContent="Requesting location…";navigator.geolocation.getCurrentPosition(p=>{gpsCoords=[p.coords.latitude,p.coords.longitude];$("#area").value=`${p.coords.latitude.toFixed(6)}, ${p.coords.longitude.toFixed(6)}`;box.textContent=`GPS captured · accuracy ±${Math.round(p.coords.accuracy||0)} m`},e=>{box.textContent=e.code===1?"Location permission denied. Allow location access and try again.":"Location unavailable."},{enableHighAccuracy:true,timeout:15000,maximumAge:0})}
 async function submitReport(e){
- e.preventDefault();const btn=e.submitter;btn.disabled=true;
- try{
-  const category=$("#cat").value,description=$("#desc").value.trim(),area=$("#area").value,district=$("#district").value,local_type=$("#localType").value;
-  const score=({"Pothole / Road":65,"Open Drainage":60,"Water Leakage":58,"Garbage / Waste":55}[category]||35)+(/accident|danger|school|hospital|blocked|flood|injur|emergency/i.test(description)?20:0);
-  const {error}=await sb.from("complaints").insert({citizen_id:state.session.user.id,category,area,district,local_body_type:local_type,description,latitude:gpsCoords?.[0]??null,longitude:gpsCoords?.[1]??null,priority:score>=75?"High":score>=50?"Medium":"Low",priority_score:Math.min(100,score),department:departments[category],status:"Pending"});
-  if(error)throw error;
-  e.target.closest(".modal").remove();await loadComplaints();render();alert("Complaint submitted successfully.");
- }catch(x){$("#rerr").innerHTML='<div class="error">'+esc(x.message)+'</div>';btn.disabled=false}
+  e.preventDefault();
+
+  const btn = e.submitter;
+  btn.disabled = true;
+  btn.textContent = "Submitting...";
+
+  try {
+    const category = $("#cat").value;
+    const description = $("#desc").value.trim();
+    const area = $("#area").value.trim();
+    const district = $("#district").value;
+    const local_type = $("#localType").value;
+
+    const photoFile = $("#photo").files[0];
+
+    const score =
+      ({"Pothole / Road":65,
+        "Open Drainage":60,
+        "Water Leakage":58,
+        "Garbage / Waste":55}[category] || 35)
+      +
+      (/accident|danger|school|hospital|blocked|flood|injur|emergency/i.test(description) ? 20 : 0);
+
+    let photo_url = null;
+
+    /* Upload evidence photo if one was selected */
+    if (photoFile) {
+
+      if (!photoFile.type.startsWith("image/")) {
+        throw new Error("Please select a valid image file.");
+      }
+
+      if (photoFile.size > 5 * 1024 * 1024) {
+        throw new Error("Photo must be smaller than 5 MB.");
+      }
+
+      const extension =
+        photoFile.name.split(".").pop().toLowerCase();
+
+      const filePath =
+        `${state.session.user.id}/${crypto.randomUUID()}.${extension}`;
+
+      const { error: uploadError } =
+        await sb.storage
+          .from("complaint-evidence")
+          .upload(filePath, photoFile, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: photoFile.type
+          });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: publicData } =
+        sb.storage
+          .from("complaint-evidence")
+          .getPublicUrl(filePath);
+
+      photo_url = publicData.publicUrl;
+    }
+
+    /* Create complaint */
+    const { error } = await sb
+      .from("complaints")
+      .insert({
+        citizen_id: state.session.user.id,
+        category,
+        area,
+        district,
+        local_body_type: local_type,
+        description,
+        latitude: gpsCoords?.[0] ?? null,
+        longitude: gpsCoords?.[1] ?? null,
+        priority: score >= 75 ? "High" : score >= 50 ? "Medium" : "Low",
+        priority_score: Math.min(100, score),
+        department: departments[category],
+        status: "Pending",
+        photo_url
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    closeReport();
+
+    await loadComplaints();
+
+    render();
+
+    alert("Complaint submitted successfully.");
+
+  } catch (x) {
+
+    $("#rerr").innerHTML =
+      '<div class="error">' + esc(x.message) + '</div>';
+
+    btn.disabled = false;
+    btn.textContent = "Submit complaint";
+  }
 }
 async function assign(id){const {data,error}=await sb.from("profiles").select("id,name").eq("role","worker").limit(1).single();if(error)return alert("No worker account is available.");const u=await sb.from("complaints").update({assigned_worker_id:data.id,status:"Assigned"}).eq("id",id);if(u.error)return alert(u.error.message);await loadComplaints();render()}
 async function changeStatus(id,status){const {error}=await sb.from("complaints").update({status}).eq("id",id);if(error)return alert(error.message);await loadComplaints();render()}
