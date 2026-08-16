@@ -596,6 +596,352 @@ body::after{
   }
 }
 
+
+/* Feature 1: escalation UI */
+.cf-escalation{
+  margin-top:12px;
+  padding:11px 12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.34);
+  border:1px solid rgba(255,255,255,.65);
+}
+.cf-escalation.is-delayed{
+  background:rgba(255,245,235,.50);
+  border-color:rgba(255,196,140,.45);
+}
+.cf-sla-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.cf-sla{
+  color:#1769e0;
+  font-size:10px;
+  font-weight:950;
+}
+.cf-sla.warning{
+  color:#9a5b00;
+}
+.cf-sla.delayed{
+  color:#b42318;
+}
+.cf-sla-meta{
+  color:#667085;
+  font-size:9px;
+}
+.cf-followups{
+  margin-top:7px;
+  font-size:10px;
+  font-weight:850;
+  color:#8b4b00;
+}
+.cf-escalation-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.cf-escalation-actions button{
+  min-height:38px;
+}
+.cf-care-btn{
+  padding:7px 10px!important;
+}
+.cf-admin-alert{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  margin-top:10px;
+  padding-top:9px;
+  border-top:1px solid rgba(180,35,24,.12);
+  font-size:10px;
+}
+.cf-admin-alert span{
+  color:#b42318;
+  font-weight:850;
+}
+.cf-escalation-summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin:0 0 15px;
+  padding:16px 18px;
+  border-radius:22px;
+  background:linear-gradient(135deg,rgba(255,249,242,.78),rgba(255,240,230,.44));
+  border:1px solid rgba(255,205,165,.70);
+  box-shadow:0 14px 35px rgba(180,95,25,.08),inset 0 1px rgba(255,255,255,.95);
+}
+.cf-escalation-summary b{
+  display:block;
+  font-size:14px;
+}
+.cf-escalation-summary span{
+  display:block;
+  margin-top:3px;
+  font-size:10px;
+  color:#7b6250;
+}
+.cf-delay-big{
+  margin-top:13px;
+  font-size:20px;
+  font-weight:950;
+  letter-spacing:-.6px;
+  color:#b42318;
+}
+.cf-delay-card .cf-escalation{
+  margin-top:10px;
+}
+@media(max-width:800px){
+  .cf-escalation-summary{
+    align-items:stretch;
+    flex-direction:column;
+    border-radius:20px;
+  }
+  .cf-escalation-summary button{
+    width:100%;
+  }
+  .cf-escalation-actions{
+    flex-direction:column;
+  }
+  .cf-escalation-actions button{
+    width:100%;
+  }
+  .cf-admin-alert{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
+
+
+/* =========================================================
+   CIVICFIX — ACCOUNTABILITY FEATURE UI
+   ========================================================= */
+.cf-case-tools{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+.cf-impact,.cf-community{
+  padding:11px 12px;
+  border-radius:17px;
+  background:rgba(255,255,255,.35);
+  border:1px solid rgba(255,255,255,.68);
+}
+.cf-impact{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.cf-impact span,.cf-community span{
+  color:#667085;
+  font-size:10px;
+}
+.cf-impact b,.cf-community b{
+  font-size:17px;
+}
+.cf-impact em{
+  margin-left:auto;
+  font-size:9px;
+  font-style:normal;
+  font-weight:900;
+  color:#1769e0;
+}
+.cf-community{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+}
+.cf-community small{
+  width:100%;
+  color:#667085;
+  font-size:9px;
+}
+.cf-duplicate{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:9px;
+  padding:9px 11px;
+  border-radius:15px;
+  background:rgba(235,244,255,.52);
+  border:1px solid rgba(150,194,250,.40);
+  font-size:10px;
+}
+.cf-duplicate span{
+  color:#667085;
+}
+.cf-routing{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:9px;
+  font-size:9px;
+  color:#667085;
+}
+.cf-routing b{color:#17539e}
+.cf-feature-actions{
+  flex-wrap:wrap;
+}
+.cf-resolution{
+  margin-top:12px;
+  padding:12px;
+  border-radius:18px;
+  background:rgba(236,249,241,.50);
+  border:1px solid rgba(112,191,135,.38);
+}
+.cf-resolution img{
+  display:block;
+  width:100%;
+  max-height:300px;
+  object-fit:cover;
+  border-radius:14px;
+  margin:9px 0;
+}
+.cf-timeline{
+  margin-top:18px;
+}
+.cf-timeline-item{
+  position:relative;
+  display:flex;
+  gap:13px;
+  min-height:65px;
+}
+.cf-timeline-item:not(:last-child)::before{
+  content:"";
+  position:absolute;
+  left:5px;
+  top:14px;
+  bottom:0;
+  width:1px;
+  background:rgba(23,105,224,.18);
+}
+.cf-timeline-dot{
+  position:relative;
+  z-index:1;
+  width:11px;
+  height:11px;
+  flex:0 0 11px;
+  margin-top:3px;
+  border-radius:50%;
+  background:#c8dcfa;
+  box-shadow:0 0 0 4px rgba(23,105,224,.06);
+}
+.cf-timeline-item.current .cf-timeline-dot{
+  background:#1769e0;
+  box-shadow:0 0 0 5px rgba(23,105,224,.10),0 0 16px rgba(23,105,224,.25);
+}
+.cf-timeline-content{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.cf-timeline-content b{font-size:12px}
+.cf-timeline-content span{font-size:11px;color:#566274}
+.cf-timeline-content small{font-size:9px;color:#98a2b3}
+.cf-feature-modal{
+  max-width:560px!important;
+}
+.cf-impact-panel{
+  display:grid;
+  grid-template-columns:1.1fr 1fr;
+  gap:18px;
+  padding:19px;
+  border-radius:25px;
+  background:linear-gradient(135deg,rgba(236,246,255,.68),rgba(255,255,255,.48));
+  border:1px solid rgba(255,255,255,.88);
+  box-shadow:0 18px 45px rgba(31,91,176,.10),inset 0 1px rgba(255,255,255,.95);
+}
+.cf-impact-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.cf-impact-grid div{
+  padding:12px;
+  border-radius:17px;
+  background:rgba(255,255,255,.43);
+  border:1px solid rgba(255,255,255,.70);
+}
+.cf-impact-grid b{
+  display:block;
+  font-size:24px;
+}
+.cf-impact-grid span{
+  font-size:9px;
+  color:#667085;
+}
+@media(max-width:800px){
+  .cf-case-tools{grid-template-columns:1fr}
+  .cf-routing{flex-direction:column}
+  .cf-impact-panel{grid-template-columns:1fr;border-radius:22px}
+  .cf-impact-grid{grid-template-columns:1fr 1fr 1fr}
+  .cf-feature-actions button{flex:1 1 45%}
+}
+
+
+.cf-dept-panel{
+  padding:18px;
+  border-radius:25px;
+  background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(235,245,255,.42));
+  border:1px solid rgba(255,255,255,.88);
+  box-shadow:0 18px 45px rgba(31,91,176,.10),inset 0 1px rgba(255,255,255,.95);
+  -webkit-backdrop-filter:blur(26px) saturate(165%);
+  backdrop-filter:blur(26px) saturate(165%);
+}
+.cf-dept-table{margin-top:14px}
+.cf-dept-row{
+  display:grid;
+  grid-template-columns:2fr repeat(3,1fr);
+  gap:10px;
+  align-items:center;
+  padding:12px 0;
+  border-top:1px solid rgba(23,105,224,.08);
+}
+.cf-dept-row>div{display:flex;flex-direction:column;gap:3px}
+.cf-dept-row span{font-size:9px;color:#667085}
+.cf-dept-row strong{font-size:17px}
+.cf-red{color:#b42318}
+@media(max-width:800px){
+  .cf-dept-row{grid-template-columns:1.7fr repeat(3,.8fr);gap:5px}
+  .cf-dept-row strong{font-size:14px}
+}
+
+
+.cf-cluster-panel{
+  padding:18px;
+  border-radius:25px;
+  background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(235,245,255,.42));
+  border:1px solid rgba(255,255,255,.88);
+  box-shadow:0 18px 45px rgba(31,91,176,.10),inset 0 1px rgba(255,255,255,.95);
+  -webkit-backdrop-filter:blur(26px) saturate(165%);
+  backdrop-filter:blur(26px) saturate(165%);
+}
+.cf-clusters{margin-top:12px;display:grid;gap:8px}
+.cf-cluster{
+  display:grid;
+  grid-template-columns:1.8fr auto auto;
+  gap:12px;
+  align-items:center;
+  padding:12px;
+  border-radius:17px;
+  background:rgba(255,255,255,.40);
+  border:1px solid rgba(255,255,255,.70);
+}
+.cf-cluster>div{display:flex;flex-direction:column;gap:3px}
+.cf-cluster>div span,.cf-cluster small{font-size:9px;color:#667085;font-weight:500}
+.cf-cluster strong{font-size:20px}
+.cf-cluster-impact{font-size:10px;font-weight:900;color:#1769e0}
+@media(max-width:800px){
+  .cf-cluster{grid-template-columns:1fr auto}
+  .cf-cluster-impact{grid-column:1/-1}
+}
+
 </style>
 </head>
 <body><div id="app"></div>
@@ -610,7 +956,7 @@ const categories=["Pothole / Road","Garbage / Waste","Water Leakage","Broken Str
 const JHARKHAND_DISTRICTS=[["Bokaro","North Chotanagpur"],["Chatra","North Chotanagpur"],["Deoghar","Santhal Pargana"],["Dhanbad","North Chotanagpur"],["Dumka","Santhal Pargana"],["East Singhbhum","Kolhan"],["Garhwa","Palamu"],["Giridih","North Chotanagpur"],["Godda","Santhal Pargana"],["Gumla","South Chotanagpur"],["Hazaribagh","North Chotanagpur"],["Jamtara","Santhal Pargana"],["Khunti","South Chotanagpur"],["Koderma","North Chotanagpur"],["Latehar","Palamu"],["Lohardaga","South Chotanagpur"],["Pakur","Santhal Pargana"],["Palamu","Palamu"],["Ramgarh","North Chotanagpur"],["Ranchi","South Chotanagpur"],["Sahibganj","Santhal Pargana"],["Saraikela-Kharsawan","Kolhan"],["Simdega","South Chotanagpur"],["West Singhbhum","Kolhan"]];
 const JHARKHAND_URBAN_TYPES=["Municipal Corporation","Nagar Parishad","Nagar Panchayat","Other Local Body"];
 const departments={"Pothole / Road":"Road Maintenance","Garbage / Waste":"Sanitation","Water Leakage":"Water Works","Broken Streetlight":"Electrical","Open Drainage":"Drainage","Other":"Municipal Services"};
-let state={session:null,profile:null,view:"citizen",complaints:[],support:[],map:null,markers:[]};
+let state={session:null,profile:null,view:"citizen",complaints:[],support:[],escalations:[],events:[],confirmations:[],watches:[],resolutionEvidence:[],map:null,markers:[]};
 
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 async function boot(){
@@ -825,7 +1171,7 @@ function nav(){
   </header>`;
 }function render(){document.body.innerHTML=nav()+`<main class="page">${state.view==="citizen"?citizen():state.view==="admin"?admin():state.view==="worker"?worker():supportView()}</main>`;drawMap()}
 function citizen(){const x=state.complaints.filter(c=>c.citizen_id===state.session.user.id);return `<section class="hero"><div><div class="eyebrow">CITIZEN PORTAL</div><h1>Report what needs fixing.</h1><p>Photo + location + description. CivicFix converts a local problem into a trackable civic case.</p><button class="primary" onclick="report()">＋ Report an issue</button></div>${mapBox(x)}</section><section class="section"><h2>My reports</h2><p class="muted">Track every issue you have submitted.</p><div class="cards">${x.length?x.map(card).join(""):'<div class="empty">No reports yet. Your first civic report starts here.</div>'}</div></section>`}
-function admin(){const x=state.complaints;return `<section class="title"><div class="eyebrow">OPERATIONS</div><h1>Admin dashboard</h1><p>Live Jharkhand queue, priorities, duplicate signals and worker assignment.</p></section><div class="stats"><div class="stat"><b>${x.length}</b><span>Total</span></div><div class="stat"><b>${x.filter(c=>c.status==="Pending").length}</b><span>Pending</span></div><div class="stat"><b>${x.filter(c=>c.priority==="High").length}</b><span>High priority</span></div><div class="stat"><b>${x.filter(c=>c.status==="Resolved").length}</b><span>Resolved</span></div></div>${mapBox(x)}<section class="section"><div class="cards">${x.map(c=>card(c,true)).join("")||'<div class="empty">No complaints yet.</div>'}</div></section><section class="section"><div class="between"><div><h2>Customer Care</h2><p class="muted">Requests needing assistance from residents.</p></div><button class="secondary" onclick="state.view='support';render()">Open support queue</button></div></section>`}
+function admin(){const x=state.complaints;return `<section class="title"><div class="eyebrow">OPERATIONS</div><h1>Admin dashboard</h1><p>Live Jharkhand queue, priorities, duplicate signals and worker assignment.</p></section>${cfAdminEscalationSummary()}<div class="stats"><div class="stat"><b>${x.length}</b><span>Total</span></div><div class="stat"><b>${x.filter(c=>c.status==="Pending").length}</b><span>Pending</span></div><div class="stat"><b>${x.filter(c=>c.priority==="High").length}</b><span>High priority</span></div><div class="stat"><b>${x.filter(c=>c.status==="Resolved").length}</b><span>Resolved</span></div></div>${mapBox(x)}<section class="section"><div class="cards">${x.map(c=>card(c,true)).join("")||'<div class="empty">No complaints yet.</div>'}</div></section>${cfAdminEscalationSection()}<section class="section"><div class="between"><div><h2>Customer Care</h2><p class="muted">Requests needing assistance from residents.</p></div><button class="secondary" onclick="state.view='support';render()">Open support queue</button></div></section>`}
 function worker(){const x=state.complaints.filter(c=>c.assigned_worker_id===state.profile.id||!c.assigned_worker_id);return `<section class="title"><div class="eyebrow">FIELD WORKER</div><h1>Work queue</h1><p>Open the case, navigate to the location and update progress from your phone.</p></section>${mapBox(x)}<section class="section"><div class="cards">${x.map(card).join("")||'<div class="empty">No assigned jobs.</div>'}</div></section>`}
 function card(c,admin=false){
 
@@ -863,6 +1209,8 @@ function card(c,admin=false){
       :
       ""
     }
+
+    ${cfEscalationPanel(c)}
 
     <div class="meta">
 
@@ -1049,6 +1397,242 @@ function openSupport(){
 function closeSupport(){const m=$("#supportModal");if(m)m.remove()}
 async function submitSupport(e){e.preventDefault();const btn=e.submitter;btn.disabled=true;try{const {error}=await sb.from("support_requests").insert({user_id:state.session.user.id,complaint_id:$("#supportComplaint").value||null,subject:$("#supportSubject").value.trim(),message:$("#supportMessage").value.trim(),status:"Open"});if(error)throw error;closeSupport();await loadSupport();state.view="support";render();alert("Your Customer Care request has been submitted.");}catch(x){$("#supportErr").innerHTML='<div class="error">'+esc(x.message)+'</div>';btn.disabled=false}}
 async function respondSupport(id){const t=state.support.find(x=>x.id===id);if(!t)return;const response=prompt("Enter the response for this request:",t.admin_response||"");if(response===null)return;const status=confirm("Mark this request as resolved?")?"Resolved":"In Progress";const {error}=await sb.from("support_requests").update({admin_response:response.trim(),status,responded_by:state.session.user.id,updated_at:new Date().toISOString()}).eq("id",id);if(error)return alert(error.message);await loadSupport();render()}
+
+/* =========================================================
+   CIVIC ESCALATION ENGINE — FEATURE 1
+   Carefully additive: existing complaint/report/map/auth
+   functions are left intact.
+   ========================================================= */
+
+const CF_ESCALATION_SLA_HOURS = {
+  "Pothole / Road": 72,
+  "Garbage / Waste": 24,
+  "Water Leakage": 24,
+  "Broken Streetlight": 72,
+  "Open Drainage": 24,
+  "Other": 72
+};
+
+function cfSlaHours(category){
+  return CF_ESCALATION_SLA_HOURS[category] || 72;
+}
+
+function cfComplaintAgeHours(c){
+  const created = new Date(c.created_at || Date.now()).getTime();
+  return Math.max(0,(Date.now()-created)/3600000);
+}
+
+function cfIsEscalationEligible(c){
+  if(!c || c.status==="Resolved" || c.status==="Verified") return false;
+  return cfComplaintAgeHours(c) >= cfSlaHours(c.category);
+}
+
+function cfEscalationLevel(c, escalationCount=0){
+  if(!cfIsEscalationEligible(c) && escalationCount===0) return 0;
+  if(escalationCount>=2) return 3;
+  if(escalationCount>=1) return 2;
+  return 1;
+}
+
+function cfSlaLabel(c){
+  const hours=cfSlaHours(c.category);
+  const age=cfComplaintAgeHours(c);
+  if(age>=hours){
+    const late=Math.max(0,Math.floor(age-hours));
+    if(late<24) return `Delayed by ${late||1}h`;
+    return `Delayed by ${Math.floor(late/24)}d`;
+  }
+  const left=Math.max(1,Math.ceil(hours-age));
+  if(left<24) return `${left}h remaining`;
+  return `${Math.ceil(left/24)}d remaining`;
+}
+
+function cfSlaClass(c){
+  if(cfIsEscalationEligible(c)) return "cf-sla delayed";
+  const ratio=cfComplaintAgeHours(c)/cfSlaHours(c.category);
+  return ratio>=.75 ? "cf-sla warning" : "cf-sla";
+}
+
+function cfEscalationsForComplaint(id){
+  return (state.escalations||[]).filter(x=>x.complaint_id===id);
+}
+
+async function loadEscalations(){
+  if(!sb || !state.session){
+    state.escalations=[];
+    return;
+  }
+  const {data,error}=await sb
+    .from("civic_escalations")
+    .select("*,complaints:complaint_id(category,area,status,created_at,citizen_id)")
+    .order("created_at",{ascending:false});
+
+  if(!error) state.escalations=data||[];
+  else state.escalations=[];
+}
+
+async function cfBuzzComplaint(id){
+  const c=state.complaints.find(x=>x.id===id);
+  if(!c) return;
+
+  if(!cfIsEscalationEligible(c)){
+    return alert(`This complaint can be escalated after its ${cfSlaHours(c.category)}-hour response window has passed.`);
+  }
+
+  const previous=cfEscalationsForComplaint(id);
+  const last=previous[0];
+  if(last){
+    const hours=(Date.now()-new Date(last.created_at).getTime())/3600000;
+    if(hours<48){
+      return alert(`A follow-up was already sent. You can buzz the department again after ${Math.ceil(48-hours)} hours.`);
+    }
+  }
+
+  const {error}=await sb.from("civic_escalations").insert({
+    complaint_id:id,
+    citizen_id:state.session.user.id,
+    escalation_type:"Citizen Follow-up",
+    message:"Citizen requested an escalation because the complaint has exceeded its expected response time."
+  });
+
+  if(error) return alert(error.message);
+
+  await loadEscalations();
+  await loadComplaints();
+  render();
+  alert("Your follow-up has been sent to the responsible team.");
+}
+
+function cfEscalationPanel(c, compact=false){
+  const escalations=cfEscalationsForComplaint(c.id);
+  const eligible=cfIsEscalationEligible(c);
+  const mine=escalations.filter(x=>x.citizen_id===state.session.user.id);
+  const lastMine=mine[0];
+  let cooldown=false;
+
+  if(lastMine){
+    cooldown=(Date.now()-new Date(lastMine.created_at).getTime())/3600000<48;
+  }
+
+  const level=cfEscalationLevel(c,escalations.length);
+  const delayed=eligible;
+
+  return `
+    <div class="cf-escalation ${delayed?"is-delayed":""}">
+      <div class="cf-sla-row">
+        <span class="${cfSlaClass(c)}">
+          ${delayed?"⚠ ":""}${esc(cfSlaLabel(c))}
+        </span>
+        <span class="cf-sla-meta">SLA ${cfSlaHours(c.category)}h</span>
+      </div>
+      ${
+        escalations.length
+        ? `<div class="cf-followups">⚡ ${escalations.length} citizen follow-up${escalations.length===1?"":"s"}</div>`
+        : ""
+      }
+      ${
+        state.profile.role==="citizen" && eligible
+        ? `<div class="cf-escalation-actions">
+             <button class="secondary" type="button"
+               ${cooldown?"disabled":""}
+               onclick="cfBuzzComplaint('${c.id}')">
+               ${cooldown?"Follow-up recently sent":"⚡ Buzz Department"}
+             </button>
+             <button class="ghost cf-care-btn" type="button"
+               onclick="openSupportForComplaint('${c.id}')">
+               Contact Customer Care
+             </button>
+           </div>`
+        : ""
+      }
+      ${
+        state.profile.role==="admin" && delayed
+        ? `<div class="cf-admin-alert">
+             <b>Escalation attention required</b>
+             <span>Level ${level} · ${escalations.length} follow-up${escalations.length===1?"":"s"}</span>
+           </div>`
+        : ""
+      }
+    </div>`;
+}
+
+function openSupportForComplaint(id){
+  const c=state.complaints.find(x=>x.id===id);
+  if(!c) return;
+  openSupport();
+  setTimeout(()=>{
+    const select=$("#supportComplaint");
+    const subject=$("#supportSubject");
+    const message=$("#supportMessage");
+    if(select) select.value=id;
+    if(subject && !subject.value) subject.value=`Follow-up on ${c.category}`;
+    if(message && !message.value){
+      message.value=`My complaint has exceeded its expected response time. Please help me follow up.\n\nComplaint: ${c.category}\nLocation: ${c.area}\nCurrent status: ${c.status}`;
+    }
+  },0);
+}
+
+function cfAdminEscalationSummary(){
+  if(state.profile.role!=="admin") return "";
+  const delayed=state.complaints.filter(cfIsEscalationEligible);
+  const escalated=delayed.filter(c=>cfEscalationsForComplaint(c.id).length);
+  if(!delayed.length) return "";
+  return `
+    <div class="cf-escalation-summary">
+      <div>
+        <div class="eyebrow">ACCOUNTABILITY</div>
+        <b>${delayed.length} complaint${delayed.length===1?"":"s"} beyond response time</b>
+        <span>${escalated.length} with citizen follow-up${escalated.length===1?"":"s"}</span>
+      </div>
+      <button class="secondary" type="button"
+        onclick="document.getElementById('cfEscalatedSection')?.scrollIntoView({behavior:'smooth',block:'start'})">
+        Review delays
+      </button>
+    </div>`;
+}
+
+function cfAdminEscalationSection(){
+  if(state.profile.role!=="admin") return "";
+  const delayed=state.complaints.filter(cfIsEscalationEligible)
+    .sort((a,b)=>{
+      const ea=cfEscalationsForComplaint(a.id).length;
+      const eb=cfEscalationsForComplaint(b.id).length;
+      return eb-ea || cfComplaintAgeHours(b)-cfComplaintAgeHours(a);
+    });
+
+  if(!delayed.length) return "";
+
+  return `
+    <section class="section" id="cfEscalatedSection">
+      <div class="between">
+        <div>
+          <h2>Escalation Center</h2>
+          <p class="muted">Complaints that exceeded their expected response time.</p>
+        </div>
+      </div>
+      <div class="cards">
+        ${delayed.map(c=>`
+          <article class="card cf-delay-card">
+            <div class="between">
+              <div>
+                <b>${esc(c.category)}</b>
+                <div class="muted">${esc(c.area)} · ${esc(c.district||"Jharkhand")}</div>
+              </div>
+              <span class="pill high">Delayed</span>
+            </div>
+            <div class="cf-delay-big">${esc(cfSlaLabel(c))}</div>
+            ${cfEscalationPanel(c,true)}
+          </article>
+        `).join("")}
+      </div>
+    </section>`;
+}
+
+/* =========================================================
+   End escalation engine
+   =========================================================
+*/
+
 function report(){
   gpsCoords=null;
 
@@ -1268,6 +1852,616 @@ if (!photoFile) {
 }
 async function assign(id){const {data,error}=await sb.from("profiles").select("id,name").eq("role","worker").limit(1).single();if(error)return alert("No worker account is available.");const u=await sb.from("complaints").update({assigned_worker_id:data.id,status:"Assigned"}).eq("id",id);if(u.error)return alert(u.error.message);await loadComplaints();render()}
 async function changeStatus(id,status){const {error}=await sb.from("complaints").update({status}).eq("id",id);if(error)return alert(error.message);await loadComplaints();render()}
-async function logout(){await sb.auth.signOut();state={session:null,profile:null,view:"citizen",complaints:[],support:[]};auth()}
+async function logout(){await sb.auth.signOut();state={session:null,profile:null,view:"citizen",complaints:[],support:[],escalations:[]};auth()}
+
+/* =========================================================
+   CIVICFIX — CIVIC ACCOUNTABILITY SUITE
+   Additive feature layer. Existing core functions remain
+   available and are wrapped rather than rewritten.
+   ========================================================= */
+
+state.events = state.events || [];
+state.confirmations = state.confirmations || [];
+state.watches = state.watches || [];
+state.resolutionEvidence = state.resolutionEvidence || [];
+
+const CF_FEATURES_VERSION = "1.0.0";
+
+function cfEsc(s){ return esc(s); }
+
+function cfUserOwnsComplaint(c){
+  return !!(c && state.session && c.citizen_id===state.session.user.id);
+}
+
+async function loadCivicExtras(){
+  if(!sb || !state.session) return;
+  const [ev,cf,wa,re] = await Promise.all([
+    sb.from("complaint_events").select("*").order("created_at",{ascending:true}),
+    sb.from("complaint_confirmations").select("*").order("created_at",{ascending:false}),
+    sb.from("civic_watches").select("*").order("created_at",{ascending:false}),
+    sb.from("resolution_evidence").select("*").order("created_at",{ascending:false})
+  ]);
+  state.events = ev.error ? [] : (ev.data||[]);
+  state.confirmations = cf.error ? [] : (cf.data||[]);
+  state.watches = wa.error ? [] : (wa.data||[]);
+  state.resolutionEvidence = re.error ? [] : (re.data||[]);
+}
+
+function cfEvents(id){
+  return (state.events||[]).filter(x=>x.complaint_id===id);
+}
+
+function cfConfirmations(id){
+  return (state.confirmations||[]).filter(x=>x.complaint_id===id);
+}
+
+function cfWatch(id){
+  return (state.watches||[]).find(x=>x.complaint_id===id && x.user_id===state.session.user.id);
+}
+
+function cfEvidence(id){
+  return (state.resolutionEvidence||[]).filter(x=>x.complaint_id===id);
+}
+
+function cfDistanceKm(aLat,aLng,bLat,bLng){
+  const R=6371, rad=Math.PI/180;
+  const dLat=(bLat-aLat)*rad, dLng=(bLng-aLng)*rad;
+  const a=Math.sin(dLat/2)**2+
+    Math.cos(aLat*rad)*Math.cos(bLat*rad)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function cfDuplicateGroup(c){
+  if(c.latitude==null || c.longitude==null) return [];
+  return state.complaints.filter(x=>
+    x.id!==c.id &&
+    x.category===c.category &&
+    x.latitude!=null &&
+    x.longitude!=null &&
+    cfDistanceKm(c.latitude,c.longitude,x.latitude,x.longitude)<=0.25
+  );
+}
+
+function cfAffectedCount(c){
+  const confirmations=cfConfirmations(c.id).length;
+  const duplicates=cfDuplicateGroup(c).length;
+  return Math.max(1,1+confirmations+duplicates);
+}
+
+function cfImpactScore(c){
+  const base=Number(c.priority_score)||35;
+  const affected=cfAffectedCount(c);
+  const ageBonus=Math.min(15,Math.floor(cfComplaintAgeHours(c)/24)*3);
+  return Math.min(100,Math.round(base + Math.min(25,(affected-1)*5) + ageBonus));
+}
+
+function cfPriorityLabel(score){
+  if(score>=80) return "Critical";
+  if(score>=60) return "High";
+  if(score>=40) return "Medium";
+  return "Low";
+}
+
+function cfRouteInfo(c){
+  const department=c.department || departments[c.category] || "Municipal Services";
+  return {
+    department,
+    reason:`${c.category} is routed to ${department}`
+  };
+}
+
+async function cfToggleWatch(id){
+  const existing=cfWatch(id);
+  if(existing){
+    const {error}=await sb.from("civic_watches").delete().eq("id",existing.id);
+    if(error) return alert(error.message);
+  }else{
+    const {error}=await sb.from("civic_watches").insert({
+      complaint_id:id,
+      user_id:state.session.user.id
+    });
+    if(error) return alert(error.message);
+  }
+  await loadCivicExtras();
+  render();
+}
+
+async function cfConfirmIssue(id){
+  const c=state.complaints.find(x=>x.id===id);
+  if(!c) return;
+  if(cfConfirmations(id).some(x=>x.user_id===state.session.user.id)){
+    return alert("You've already confirmed this issue.");
+  }
+  const {error}=await sb.from("complaint_confirmations").insert({
+    complaint_id:id,
+    user_id:state.session.user.id
+  });
+  if(error) return alert(error.message);
+  await loadCivicExtras();
+  render();
+}
+
+async function cfAddEvent(complaintId,eventType,message,actorId){
+  const {error}=await sb.from("complaint_events").insert({
+    complaint_id:complaintId,
+    event_type:eventType,
+    message,
+    actor_id:actorId || state.session?.user?.id || null
+  });
+  if(error) console.warn("Timeline event could not be recorded:",error.message);
+}
+
+function cfTimelineHtml(c){
+  const events=cfEvents(c.id);
+  const fallback=[
+    {
+      event_type:"Reported",
+      message:"Complaint submitted",
+      created_at:c.created_at
+    }
+  ];
+  const all=events.length?events:fallback;
+  return `
+    <div class="cf-timeline">
+      ${all.map((e,i)=>`
+        <div class="cf-timeline-item ${i===all.length-1?"current":""}">
+          <div class="cf-timeline-dot"></div>
+          <div class="cf-timeline-content">
+            <b>${cfEsc(e.event_type)}</b>
+            <span>${cfEsc(e.message||"")}</span>
+            <small>${new Date(e.created_at).toLocaleString()}</small>
+          </div>
+        </div>`).join("")}
+    </div>`;
+}
+
+function cfOpenTimeline(id){
+  const c=state.complaints.find(x=>x.id===id);
+  if(!c) return;
+  document.body.insertAdjacentHTML("beforeend",`
+    <div class="modal" id="cfTimelineModal">
+      <div class="modalcard cf-feature-modal">
+        <button class="close" type="button" onclick="document.getElementById('cfTimelineModal')?.remove()">×</button>
+        <div class="eyebrow">CASE TIMELINE</div>
+        <h2>${cfEsc(c.category)}</h2>
+        <p class="muted">${cfEsc(c.area)} · ${cfEsc(c.status)}</p>
+        ${cfTimelineHtml(c)}
+      </div>
+    </div>`);
+}
+
+function cfNearbyComplaints(c){
+  if(c.latitude==null || c.longitude==null) return [];
+  return state.complaints
+    .filter(x=>x.id!==c.id && x.latitude!=null && x.longitude!=null)
+    .map(x=>({...x,_distance:cfDistanceKm(c.latitude,c.longitude,x.latitude,x.longitude)}))
+    .filter(x=>x._distance<=2)
+    .sort((a,b)=>a._distance-b._distance)
+    .slice(0,6);
+}
+
+function cfNearbySection(){
+  if(state.profile.role!=="citizen") return "";
+  const mine=state.complaints.filter(cfUserOwnsComplaint);
+  const source=mine.find(c=>c.latitude!=null&&c.longitude!=null);
+  if(!source) return "";
+  const nearby=cfNearbyComplaints(source);
+  if(!nearby.length) return "";
+  return `
+    <section class="section cf-nearby">
+      <div class="between">
+        <div>
+          <h2>Nearby civic issues</h2>
+          <p class="muted">Existing reports near your reported locations.</p>
+        </div>
+      </div>
+      <div class="cards">
+        ${nearby.map(c=>`
+          <article class="card">
+            <div class="between">
+              <div>
+                <b>${cfEsc(c.category)}</b>
+                <div class="muted">${cfEsc(c.area)}</div>
+              </div>
+              <span class="pill ${String(c.priority).toLowerCase()}">${cfEsc(c.priority)}</span>
+            </div>
+            <div class="meta"><span>${c._distance.toFixed(1)} km away</span><span>${cfEsc(c.status)}</span></div>
+            <div class="actions">
+              <button class="secondary" type="button" onclick="cfConfirmIssue('${c.id}')">I have this problem too</button>
+            </div>
+          </article>`).join("")}
+      </div>
+    </section>`;
+}
+
+async function cfUploadResolutionEvidence(id){
+  const c=state.complaints.find(x=>x.id===id);
+  if(!c) return;
+  const input=document.createElement("input");
+  input.type="file";
+  input.accept="image/*";
+  input.capture="environment";
+  input.onchange=async()=>{
+    const file=input.files?.[0];
+    if(!file) return;
+    if(!file.type.startsWith("image/")) return alert("Please select an image.");
+    if(file.size>5*1024*1024) return alert("Evidence photo must be smaller than 5 MB.");
+    try{
+      const path=`resolution/${c.id}/${state.session.user.id}/${crypto.randomUUID()}.${file.name.split(".").pop().toLowerCase()}`;
+      const {error:upErr}=await sb.storage.from("complaint-evidence").upload(path,file,{
+        cacheControl:"3600",
+        upsert:false,
+        contentType:file.type
+      });
+      if(upErr) throw upErr;
+      const {data:urlData}=sb.storage.from("complaint-evidence").getPublicUrl(path);
+      const {error}=await sb.from("resolution_evidence").insert({
+        complaint_id:c.id,
+        worker_id:state.session.user.id,
+        photo_url:urlData.publicUrl,
+        note:"Resolution evidence submitted by field worker."
+      });
+      if(error) throw error;
+      const {error:statusError}=await sb.from("complaints").update({status:"Resolved"}).eq("id",id);
+      if(statusError) throw statusError;
+      await cfAddEvent(id,"Resolution Evidence","Field worker submitted resolution evidence.",state.session.user.id);
+      await loadComplaints();
+      await loadCivicExtras();
+      render();
+      alert("Resolution evidence submitted. The citizen can now verify the fix.");
+    }catch(e){ alert(e.message); }
+  };
+  input.click();
+}
+
+async function cfVerifyResolution(id,verified){
+  const c=state.complaints.find(x=>x.id===id);
+  if(!c) return;
+  const next=verified?"Verified":"Pending";
+  const note=verified?"Citizen confirmed the resolution.":"Citizen reported that the issue is still present.";
+  const {error}=await sb.from("complaints").update({status:next}).eq("id",id);
+  if(error) return alert(error.message);
+  await cfAddEvent(id,verified?"Verified":"Reopened",note,state.session.user.id);
+  await loadComplaints();
+  await loadCivicExtras();
+  render();
+}
+
+function cfResolutionBlock(c){
+  const evidence=cfEvidence(c.id);
+  if(!evidence.length && c.status!=="Resolved" && c.status!=="Verified") return "";
+  return `
+    <div class="cf-resolution">
+      <div class="eyebrow">RESOLUTION EVIDENCE</div>
+      ${evidence.map(e=>`
+        <img src="${cfEsc(e.photo_url)}" alt="Resolution evidence">
+        ${e.note?`<div class="muted">${cfEsc(e.note)}</div>`:""}
+      `).join("")}
+      ${
+        state.profile.role==="citizen" && c.status==="Resolved"
+        ? `<div class="actions">
+             <button class="primary" type="button" onclick="cfVerifyResolution('${c.id}',true)">Confirm resolved</button>
+             <button class="secondary" type="button" onclick="cfVerifyResolution('${c.id}',false)">Still not fixed</button>
+           </div>`
+        : ""
+      }
+    </div>`;
+}
+
+function cfFeatureCardAddon(c){
+  const confirmations=cfConfirmations(c.id);
+  const watched=!!cfWatch(c.id);
+  const duplicates=cfDuplicateGroup(c);
+  const impact=cfImpactScore(c);
+  const route=cfRouteInfo(c);
+  return `
+    <div class="cf-case-tools">
+      <div class="cf-impact">
+        <span>Impact</span><b>${impact}/100</b><em>${cfPriorityLabel(impact)}</em>
+      </div>
+      <div class="cf-community">
+        <b>${cfAffectedCount(c)}</b>
+        <span>citizen${cfAffectedCount(c)===1?"":"s"} affected</span>
+        ${confirmations.length?`<small>+${confirmations.length} confirmations</small>`:""}
+      </div>
+    </div>
+    ${
+      duplicates.length
+      ? `<div class="cf-duplicate">
+          <b>Possible duplicate cluster</b>
+          <span>${duplicates.length+1} nearby ${cfEsc(c.category)} report${duplicates.length+1===1?"":"s"}</span>
+        </div>`
+      : ""
+    }
+    <div class="cf-routing">
+      <span>Routed to <b>${cfEsc(route.department)}</b></span>
+      <span>${cfEsc(route.reason)}</span>
+    </div>
+    <div class="actions cf-feature-actions">
+      <button class="secondary" type="button" onclick="cfOpenTimeline('${c.id}')">View timeline</button>
+      ${
+        state.profile.role==="citizen"
+        ? `<button class="secondary" type="button" onclick="cfToggleWatch('${c.id}')">${watched?"Watching":"Watch case"}</button>`
+        : ""
+      }
+      ${
+        state.profile.role==="citizen" && !cfUserOwnsComplaint(c)
+        ? `<button class="secondary" type="button" onclick="cfConfirmIssue('${c.id}')">I have this problem too</button>`
+        : ""
+      }
+      ${
+        state.profile.role==="worker" && c.status==="In Progress"
+        ? `<button class="primary" type="button" onclick="cfUploadResolutionEvidence('${c.id}')">Upload resolution evidence</button>`
+        : ""
+      }
+    </div>
+    ${cfResolutionBlock(c)}
+  `;
+}
+
+function cfImpactMapPanel(){
+  if(state.profile.role!=="admin") return "";
+  const high=state.complaints.filter(c=>cfImpactScore(c)>=70).length;
+  const delayed=state.complaints.filter(c=>cfIsEscalationEligible(c)).length;
+  const affected=state.complaints.reduce((n,c)=>n+cfAffectedCount(c),0);
+  return `
+    <section class="section">
+      <div class="cf-impact-panel">
+        <div>
+          <div class="eyebrow">CIVIC IMPACT</div>
+          <h2>Where attention is needed</h2>
+          <p class="muted">Impact combines priority, age and community signals. Use the live map above to inspect locations.</p>
+        </div>
+        <div class="cf-impact-grid">
+          <div><b>${high}</b><span>High-impact cases</span></div>
+          <div><b>${delayed}</b><span>Delayed cases</span></div>
+          <div><b>${affected}</b><span>Estimated affected reports</span></div>
+        </div>
+      </div>
+    </section>`;
+}
+
+function cfWatchPanel(){
+  if(state.profile.role!=="citizen") return "";
+  const watched=state.watches.map(w=>state.complaints.find(c=>c.id===w.complaint_id)).filter(Boolean);
+  if(!watched.length) return "";
+  return `
+    <section class="section">
+      <div class="between">
+        <div><h2>Watching</h2><p class="muted">Cases you want CivicFix to keep visible to you.</p></div>
+      </div>
+      <div class="cards">
+        ${watched.map(c=>`
+          <article class="card">
+            <div class="between">
+              <div><b>${cfEsc(c.category)}</b><div class="muted">${cfEsc(c.area)}</div></div>
+              <span class="status ${String(c.status).toLowerCase()}">${cfEsc(c.status)}</span>
+            </div>
+            <div class="meta"><span>${cfEsc(cfSlaLabel(c))}</span><span>Impact ${cfImpactScore(c)}/100</span></div>
+          </article>`).join("")}
+      </div>
+    </section>`;
+}
+
+/* ---- Wrap existing functions rather than replacing their logic ---- */
+
+const cfOriginalHydrate = hydrate;
+hydrate = async function(){
+  await cfOriginalHydrate();
+  await loadCivicExtras();
+};
+
+const cfOriginalCard = card;
+card = function(c,admin=false){
+  const base=cfOriginalCard(c,admin);
+  return base.replace("</article>",`${cfFeatureCardAddon(c)}</article>`);
+};
+
+const cfOriginalCitizen = citizen;
+citizen = function(){
+  return cfOriginalCitizen()+cfNearbySection()+cfWatchPanel();
+};
+
+const cfOriginalAdmin = admin;
+admin = function(){
+  return cfOriginalAdmin()+cfImpactMapPanel();
+};
+
+const cfOriginalWorker = worker;
+worker = function(){
+  return cfOriginalWorker();
+};
+
+/* Log key state changes without altering their outcomes. */
+const cfOriginalAssign = assign;
+assign = async function(id){
+  await cfOriginalAssign(id);
+  await cfAddEvent(id,"Assigned","Complaint assigned to a field worker.",state.session.user.id);
+  await loadCivicExtras();
+  render();
+};
+
+const cfOriginalChangeStatus = changeStatus;
+changeStatus = async function(id,status){
+  if(status==="Resolved" && state.profile?.role==="worker"){
+    const existing=cfEvidence(id);
+    if(!existing.length){
+      alert("Resolution evidence is required before a case can be marked resolved.");
+      return cfUploadResolutionEvidence(id);
+    }
+  }
+
+  await cfOriginalChangeStatus(id,status);
+  const messages={
+    "In Progress":"Field worker started work.",
+    "Resolved":"Field worker marked the complaint resolved.",
+    "Verified":"Citizen verified the resolution."
+  };
+  await cfAddEvent(id,status,messages[status]||`Complaint status changed to ${status}.`,state.session.user.id);
+  await loadCivicExtras();
+  render();
+};
+
+/* Capture a new complaint after the original submission succeeds. */
+const cfOriginalSubmitReport = submitReport;
+submitReport = async function(e){
+  const beforeIds=new Set((state.complaints||[]).map(c=>c.id));
+  await cfOriginalSubmitReport(e);
+  await loadComplaints();
+  const created=state.complaints.find(c=>!beforeIds.has(c.id));
+  if(created){
+    await cfAddEvent(created.id,"Reported","Complaint submitted by citizen.",state.session.user.id);
+    await loadCivicExtras();
+    render();
+  }
+};
+
+/* Capture Customer Care as part of the same case ecosystem. */
+const cfOriginalSubmitSupport = submitSupport;
+submitSupport = async function(e){
+  await cfOriginalSubmitSupport(e);
+  await loadCivicExtras();
+};
+
+/* Re-run extras after a login/session refresh. */
+const cfOriginalLogout = logout;
+logout = async function(){
+  await cfOriginalLogout();
+  state.events=[];
+  state.confirmations=[];
+  state.watches=[];
+  state.resolutionEvidence=[];
+};
+
+/* Feature suite version marker for debugging. */
+window.CivicFixFeatures = {
+  version:CF_FEATURES_VERSION,
+  enabled:[
+    "escalation",
+    "timeline",
+    "resolution-verification",
+    "community-confirmation",
+    "duplicate-clustering",
+    "nearby-issues",
+    "impact-intelligence",
+    "smart-routing",
+    "department-intelligence",
+    "civic-watch"
+  ]
+};
+
+
+/* ---- Additional intelligence views ---- */
+function cfDepartmentAnalytics(){
+  if(state.profile.role!=="admin") return "";
+  const rows={};
+  state.complaints.forEach(c=>{
+    const d=c.department||"Municipal Services";
+    rows[d] ||= {total:0,resolved:0,delayed:0,impact:0};
+    rows[d].total++;
+    if(c.status==="Resolved"||c.status==="Verified") rows[d].resolved++;
+    if(cfIsEscalationEligible(c)) rows[d].delayed++;
+    rows[d].impact += cfImpactScore(c);
+  });
+  const list=Object.entries(rows).map(([name,v])=>({
+    name,...v,
+    rate:v.total?Math.round(v.resolved/v.total*100):0,
+    avg:v.total?Math.round(v.impact/v.total):0
+  })).sort((a,b)=>b.delayed-a.delayed||b.total-a.total);
+
+  return `
+    <section class="section">
+      <div class="cf-dept-panel">
+        <div class="between">
+          <div>
+            <div class="eyebrow">DEPARTMENT INTELLIGENCE</div>
+            <h2>Operational performance</h2>
+            <p class="muted">Internal indicators derived from the current civic queue.</p>
+          </div>
+        </div>
+        <div class="cf-dept-table">
+          ${list.map(d=>`
+            <div class="cf-dept-row">
+              <div><b>${cfEsc(d.name)}</b><span>${d.total} case${d.total===1?"":"s"}</span></div>
+              <div><strong>${d.rate}%</strong><span>resolved</span></div>
+              <div><strong class="${d.delayed?"cf-red":""}">${d.delayed}</strong><span>delayed</span></div>
+              <div><strong>${d.avg}</strong><span>avg impact</span></div>
+            </div>`).join("")}
+        </div>
+      </div>
+    </section>`;
+}
+
+const cfOriginalAdminWithIntelligence = admin;
+admin = function(){
+  return cfOriginalAdminWithIntelligence()+cfDepartmentAnalytics();
+};
+
+function cfImpactCircles(){
+  if(!state.map || state.profile.role!=="admin") return;
+  const items=state.complaints.filter(c=>c.latitude!=null&&c.longitude!=null);
+  items.forEach(c=>{
+    const score=cfImpactScore(c);
+    const radius=60+score*2.2;
+    const circle=L.circle([c.latitude,c.longitude],{
+      radius,
+      color:score>=80?"#b42318":score>=60?"#d97706":"#1769e0",
+      weight:1,
+      fillOpacity:.055,
+      opacity:.25,
+      interactive:false
+    }).addTo(state.map);
+    circle._cfImpact=true;
+  });
+}
+
+const cfOriginalDrawMap = drawMap;
+drawMap = function(){
+  cfOriginalDrawMap();
+  setTimeout(cfImpactCircles,120);
+};
+
+
+function cfDuplicateClusters(){
+  if(state.profile.role!=="admin") return "";
+  const groups=[];
+  const seen=new Set();
+
+  state.complaints.forEach(c=>{
+    if(seen.has(c.id) || c.latitude==null || c.longitude==null) return;
+    const members=[c,...cfDuplicateGroup(c)];
+    if(members.length<2) return;
+    members.forEach(x=>seen.add(x.id));
+    groups.push({lead:c,members});
+  });
+
+  if(!groups.length) return "";
+
+  return `
+    <section class="section">
+      <div class="cf-cluster-panel">
+        <div class="eyebrow">COMMUNITY SIGNALS</div>
+        <h2>Potential duplicate clusters</h2>
+        <p class="muted">Nearby reports of the same category are grouped for administrative review.</p>
+        <div class="cf-clusters">
+          ${groups.slice(0,8).map(g=>`
+            <div class="cf-cluster">
+              <div>
+                <b>${cfEsc(g.lead.category)}</b>
+                <span>${cfEsc(g.lead.area)}</span>
+              </div>
+              <strong>${g.members.length}<small> related reports</small></strong>
+              <span class="cf-cluster-impact">Impact ${cfImpactScore(g.lead)}/100</span>
+            </div>`).join("")}
+        </div>
+      </div>
+    </section>`;
+}
+
+const cfAdminBeforeClusters = admin;
+admin = function(){
+  return cfAdminBeforeClusters()+cfDuplicateClusters();
+};
+
 boot();
 </script></body></html>
