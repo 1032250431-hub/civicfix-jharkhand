@@ -1,1 +1,34 @@
-{"name":"CivicFix Jharkhand","short_name":"CivicFix","start_url":"/","scope":"/","display":"standalone","orientation":"portrait-primary","background_color":"#f4f8ff","theme_color":"#1769e0","description":"Report, track and resolve civic issues with resilient connectivity.","icons":[{"src":"/civicfix-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{
+  "id": "/",
+  "name": "CivicFix Jharkhand",
+  "short_name": "CivicFix",
+  "start_url": "/",
+  "scope": "/",
+  "display_override": ["fullscreen", "standalone"],
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f8ff",
+  "theme_color": "#1769e0",
+  "description": "Report, track and resolve civic issues with resilient connectivity.",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/civicfix-icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/civicfix-icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/civicfix-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
