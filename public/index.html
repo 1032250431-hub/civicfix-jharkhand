@@ -119,10 +119,23 @@ async function boot(){
  sb.auth.onAuthStateChange(async(_e,s)=>{state.session=s;if(!s){state.profile=null;auth()}else{await hydrate();render()}});
 }
 async function hydrate(){
- const {data:profile}=await sb.from("profiles").select("*").eq("id",state.session.user.id).single();
- state.profile=profile||{name:state.session.user.email,email:state.session.user.email,role:"citizen"};
- state.view=state.profile.role;
- await loadComplaints();
+  const {data:profile,error}=await sb
+    .from("profiles")
+    .select("*")
+    .eq("id",state.session.user.id)
+    .single();
+
+  if(error){
+    console.error("Profile load failed:",error);
+    throw new Error("Unable to load your account profile.");
+  }
+
+  state.profile=profile;
+  state.view=state.profile.role;
+
+  await loadComplaints();
+  await loadSupport();
+}
  await loadSupport();
 }
 async function loadComplaints(){
@@ -656,8 +669,7 @@ let gpsCoords=null;
 function useGPS(){const box=$("#gpsmsg");box.style.display="block";if(!navigator.geolocation){box.textContent="This device does not support GPS.";return}box.textContent="Requesting location…";navigator.geolocation.getCurrentPosition(p=>{gpsCoords=[p.coords.latitude,p.coords.longitude];$("#area").value=`${p.coords.latitude.toFixed(6)}, ${p.coords.longitude.toFixed(6)}`;box.textContent=`GPS captured · accuracy ±${Math.round(p.coords.accuracy||0)} m`},e=>{box.textContent=e.code===1?"Location permission denied. Allow location access and try again.":"Location unavailable."},{enableHighAccuracy:true,timeout:15000,maximumAge:0})}
 async function submitReport(e){
   e.preventDefault();
-
-  const btn = e.submitter;
+const btn = e.submitter;
   btn.disabled = true;
   btn.textContent = "Submitting...";
 
@@ -667,8 +679,6 @@ async function submitReport(e){
     const area = $("#area").value.trim();
     const district = $("#district").value;
     const local_type = $("#localType").value;
-
-   https://github.com/1032250431-hub/civicfix-jharkhand/edit/main/public/index.html
 const photoInput = $("#photo");
 const photoFile = photoInput?.files?.[0] || null;
 if (!photoFile) {
