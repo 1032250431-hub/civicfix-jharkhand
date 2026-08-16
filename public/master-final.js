@@ -1,8 +1,14 @@
-/* CivicFix master entrypoint. The dashboard layer is intentionally loaded last so role-specific UI and citizen resolution feedback override legacy presentation without changing core data services. */
+/* CivicFix master entrypoint. Compatibility polish loads before the new role dashboard layer. */
 (function(){
   "use strict";
-  const script=document.createElement("script");
-  script.src="/dashboard-final.js?v=2026-08-16-dashboard2";
-  script.async=false;
-  (document.body||document.head||document.documentElement).appendChild(script);
+  function load(src){
+    return new Promise((resolve,reject)=>{
+      const s=document.createElement("script");
+      s.src=src;s.async=false;s.onload=resolve;s.onerror=reject;
+      (document.body||document.head||document.documentElement).appendChild(s);
+    });
+  }
+  load("/master-compat.js?v=2026-08-16-mastercompat1")
+    .then(()=>load("/dashboard-final.js?v=2026-08-16-dashboard2"))
+    .catch(err=>console.error("CivicFix master layers failed to load",err));
 })();
