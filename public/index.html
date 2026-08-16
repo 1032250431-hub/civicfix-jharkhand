@@ -1297,12 +1297,240 @@ button:disabled{cursor:not-allowed;opacity:.62}
   }
 }
 
+
+/* =========================================================
+   CIVICFIX — iOS-STYLE ORIGIN TRANSITIONS
+   UI/interaction layer only. Existing app logic untouched.
+   ========================================================= */
+
+#cfTransitionLayer{
+  position:fixed;
+  inset:0;
+  z-index:50000;
+  pointer-events:none;
+  opacity:0;
+  visibility:hidden;
+  overflow:hidden;
+  background:rgba(242,248,255,.08);
+  -webkit-backdrop-filter:blur(0);
+  backdrop-filter:blur(0);
+}
+
+#cfTransitionLayer.is-active{
+  opacity:1;
+  visibility:visible;
+}
+
+#cfTransitionOrb{
+  position:absolute;
+  left:var(--cf-tx,50%);
+  top:var(--cf-ty,50%);
+  width:var(--cf-tw,72px);
+  height:var(--cf-th,52px);
+  border-radius:var(--cf-tr,18px);
+  transform:translate(-50%,-50%) scale(1);
+  transform-origin:center;
+  opacity:0;
+  background:
+    radial-gradient(circle at 30% 22%,rgba(255,255,255,.82),transparent 32%),
+    linear-gradient(135deg,rgba(255,255,255,.78),rgba(219,236,255,.68));
+  border:1px solid rgba(255,255,255,.96);
+  box-shadow:
+    0 25px 70px rgba(31,91,176,.18),
+    0 0 55px rgba(45,131,246,.15),
+    inset 0 1px rgba(255,255,255,1);
+  -webkit-backdrop-filter:blur(28px) saturate(175%);
+  backdrop-filter:blur(28px) saturate(175%);
+  will-change:transform,opacity,border-radius;
+}
+
+#cfTransitionLayer.is-active #cfTransitionOrb{
+  animation:cfOriginExpand 430ms cubic-bezier(.22,1,.36,1) forwards;
+}
+
+#cfTransitionLayer.is-closing #cfTransitionOrb{
+  animation:cfOriginCollapse 330ms cubic-bezier(.22,1,.36,1) forwards;
+}
+
+#cfTransitionLayer.is-active::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at var(--cf-tx,50%) var(--cf-ty,50%),
+    rgba(255,255,255,.24),transparent 28%);
+  opacity:0;
+  animation:cfTransitionGlow 430ms ease-out forwards;
+}
+
+@keyframes cfOriginExpand{
+  0%{
+    opacity:.96;
+    transform:translate(-50%,-50%) scale(1);
+    border-radius:var(--cf-tr,18px);
+  }
+  38%{opacity:1}
+  100%{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(var(--cf-ts,34));
+    border-radius:48px;
+  }
+}
+
+@keyframes cfOriginCollapse{
+  0%{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(var(--cf-ts,34));
+    border-radius:48px;
+  }
+  100%{
+    opacity:0;
+    transform:translate(-50%,-50%) scale(1);
+    border-radius:var(--cf-tr,18px);
+  }
+}
+
+@keyframes cfTransitionGlow{
+  0%{opacity:0}
+  28%{opacity:.9}
+  100%{opacity:0}
+}
+
+/* Content gets a subtle native-app entrance after the expansion. */
+.cf-transition-enter main.page{
+  animation:cfNativePageIn 430ms cubic-bezier(.22,1,.36,1) both;
+}
+
+.cf-transition-enter .authcard{
+  animation:cfNativeCardIn 430ms cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes cfNativePageIn{
+  from{opacity:0;transform:scale(.985);filter:blur(5px)}
+  45%{filter:blur(1px)}
+  to{opacity:1;transform:scale(1);filter:blur(0)}
+}
+
+@keyframes cfNativeCardIn{
+  from{opacity:0;transform:scale(.985) translateY(7px);filter:blur(5px)}
+  to{opacity:1;transform:none;filter:blur(0)}
+}
+
+/* Prevent accidental interaction during the short transition. */
+body.cf-transition-lock{overflow:hidden!important}
+
+@media(prefers-reduced-motion:reduce){
+  #cfTransitionLayer,
+  #cfTransitionOrb,
+  #cfTransitionLayer::after,
+  .cf-transition-enter main.page,
+  .cf-transition-enter .authcard{
+    animation:none!important;
+    transition:none!important;
+  }
+  #cfTransitionLayer.is-active #cfTransitionOrb{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(40);
+  }
+}
+
 </style>
 </head>
 <body><div id="app"></div>
+<div id="cfTransitionLayer" aria-hidden="true"><div id="cfTransitionOrb"></div></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+
+/* =========================================================
+   CIVICFIX — ORIGIN TRANSITION CONTROLLER
+   ========================================================= */
+let cfTransitionBusy=false;
+
+function cfTransitionPoint(source){
+  const rect=source?.getBoundingClientRect?.();
+  if(!rect){
+    return {
+      x:window.innerWidth/2,
+      y:window.innerHeight/2,
+      w:72,
+      h:52,
+      r:18
+    };
+  }
+  return {
+    x:rect.left+rect.width/2,
+    y:rect.top+rect.height/2,
+    w:Math.max(42,Math.min(rect.width,220)),
+    h:Math.max(42,Math.min(rect.height,100)),
+    r:Math.max(12,Math.min(28,parseFloat(getComputedStyle(source).borderRadius)||18))
+  };
+}
+
+function cfTransition(source){
+  if(cfTransitionBusy) return;
+  const layer=document.getElementById("cfTransitionLayer");
+  const orb=document.getElementById("cfTransitionOrb");
+  if(!layer||!orb) return;
+
+  const p=cfTransitionPoint(source);
+  const diagonal=Math.hypot(window.innerWidth,window.innerHeight);
+  const base=Math.max(p.w,p.h);
+  const scale=Math.max(18,Math.ceil(diagonal/base)+2);
+
+  layer.classList.remove("is-closing");
+  layer.style.setProperty("--cf-tx",`${p.x}px`);
+  layer.style.setProperty("--cf-ty",`${p.y}px`);
+  layer.style.setProperty("--cf-tw",`${p.w}px`);
+  layer.style.setProperty("--cf-th",`${p.h}px`);
+  layer.style.setProperty("--cf-tr",`${p.r}px`);
+  layer.style.setProperty("--cf-ts",scale);
+
+  layer.classList.add("is-active");
+  document.body.classList.add("cf-transition-lock");
+  cfTransitionBusy=true;
+
+  window.setTimeout(()=>{
+    document.body.classList.remove("cf-transition-lock");
+    document.documentElement.classList.add("cf-transition-enter");
+  },380);
+
+  window.setTimeout(()=>{
+    layer.classList.remove("is-active");
+    document.documentElement.classList.remove("cf-transition-enter");
+    cfTransitionBusy=false;
+  },520);
+}
+
+function cfTransitionFromEvent(event){
+  const target=event?.currentTarget||event?.target;
+  cfTransition(target instanceof Element?target:null);
+}
+
+/* Automatically gives navigation controls the same origin point.
+   Explicitly excluded: form submits, destructive actions, map controls,
+   external links, and buttons that already stop propagation. */
+document.addEventListener("click",(event)=>{
+  if(cfTransitionBusy) return;
+  if(event.defaultPrevented) return;
+
+  const el=event.target.closest?.(
+    '.nav button,.brand,.hero .primary,.hero .secondary,'+
+    '.card,.support-card,.cf-access-card,.cf-access-actions .primary,'+
+    '.cf-access-link,.link'
+  );
+  if(!el) return;
+
+  if(el.matches("a[target='_blank'],[href^='http'],.cf-access-link")) return;
+  if(el.closest("form")) return;
+
+  /* Cards only animate when they are interactive. */
+  if(el.matches(".card,.support-card,.cf-access-card") &&
+     !el.querySelector("button,a,[onclick]") &&
+     !el.hasAttribute("onclick")) return;
+
+  cfTransition(el);
+},true);
+
 const $ = (selector) => document.querySelector(selector);
 const CONFIG={url:"https://socmofnajiidydjauxvm.supabase.co",key:"sb_publishable_XzPZMJ0YwPLjAvV4KSCugA_e4xl1clr"};
 const configured=CONFIG.url.startsWith("https://")&&CONFIG.key.length>20;
