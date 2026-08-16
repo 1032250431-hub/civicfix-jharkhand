@@ -109,15 +109,107 @@ const JHARKHAND_URBAN_TYPES=["Municipal Corporation","Nagar Parishad","Nagar Pan
 const departments={"Pothole / Road":"Road Maintenance","Garbage / Waste":"Sanitation","Water Leakage":"Water Works","Broken Streetlight":"Electrical","Open Drainage":"Drainage","Other":"Municipal Services"};
 let state={session:null,profile:null,view:"citizen",complaints:[],support:[],map:null,markers:[]};
 
-function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-async function boot(){
- splash();
- if(!sb){return setTimeout(setup,500)}
- const {data}=await sb.auth.getSession();state.session=data.session;
- if(!state.session)return auth();
- await hydrate();render();
- sb.auth.onAuthStateChange(async(_e,s)=>{state.session=s;if(!s){state.profile=null;auth()}else{await hydrate();render()}});
+function esc(s){
+  return String(s ?? "").replace(/[&<>"']/g,m=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  }[m]));
 }
+
+function splash(){
+  document.body.innerHTML=`
+    <div style="
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      background:#1769e0;
+      color:#fff;
+      text-align:center;
+    ">
+      <div>
+        <div class="logo" style="
+          background:#fff;
+          color:#1769e0;
+          margin:auto;
+          width:60px;
+          height:60px;
+          font-size:28px;
+          border-radius:16px;
+        ">C</div>
+        <h1 style="margin:14px 0 4px;">CivicFix</h1>
+        <p style="margin:0;opacity:.85;">Report · Route · Resolve · Verify</p>
+      </div>
+    </div>
+  `;
+}
+
+function setup(){
+  document.body.innerHTML=`
+    <div class="auth">
+      <section class="visual">
+        <div class="eyebrow" style="color:#fff">JHARKHAND CIVIC PLATFORM</div>
+        <h1>One last setup.</h1>
+        <p>
+          CivicFix is ready, but the backend connection needs to be configured.
+        </p>
+      </section>
+      <section class="authcard">
+        <div class="logo">C</div>
+        <h2>Backend not connected</h2>
+        <p class="muted">
+          Add a valid Supabase project URL and publishable key to the application configuration.
+        </p>
+      </section>
+    </div>
+  `;
+}
+
+async function boot(){
+  splash();
+
+  if(!sb){
+    return setTimeout(setup,500);
+  }
+
+  try{
+    const {data}=await sb.auth.getSession();
+    state.session=data.session;
+
+    if(!state.session){
+      auth();
+      return;
+    }
+
+    await hydrate();
+    render();
+
+    sb.auth.onAuthStateChange(async(_event,session)=>{
+      state.session=session;
+
+      if(!session){
+        state.profile=null;
+        state.complaints=[];
+        state.support=[];
+        auth();
+      }else{
+        try{
+          await hydrate();
+          render();
+        }catch(error){
+          console.error(error);
+          auth();
+        }
+      }
+    });
+  }catch(error){
+    console.error("Startup failed:",error);
+    setup();
+  }
+}
+
 async function hydrate(){
   const {data:profile,error}=await sb
     .from("profiles")
@@ -244,6 +336,32 @@ async function loadComplaints(){
   }
 
   state.complaints=data||[];
+}
+
+async function loadSupport(){
+  if(!state.session){
+    state.support=[];
+    return;
+  }
+
+  let q=sb
+    .from("support_requests")
+    .select("*,complaints:complaint_id(category,area)")
+    .order("created_at",{ascending:false});
+
+  if(state.profile?.role==="citizen"){
+    q=q.eq("user_id",state.session.user.id);
+  }
+
+  const {data,error}=await q;
+
+  if(error){
+    console.error("Support loading failed:",error);
+    state.support=[];
+    return;
+  }
+
+  state.support=data||[];
 }
 
 function signup(){
@@ -456,11 +574,14 @@ function card(c,admin=false){
       c.photo_url
       ?
       `<div style="margin:12px 0">
-        <img
-          src="${esc(c.photo_url)}"
-          alt="Complaint evidence"
-          style="width:100%;max-height:280px;object-fit:cover;border-radius:12px;border:1px solid #e0e7ef"
-        >
+        <a href="${esc(c.photo_url)}" target="_blank" rel="noopener" style="display:block">
+          <img
+            src="${esc(c.photo_url)}"
+            alt="Complaint evidence"
+            loading="lazy"
+            style="width:100%;max-height:280px;object-fit:cover;border-radius:12px;border:1px solid #e0e7ef"
+          >
+        </a>
       </div>`
       :
       ""
@@ -564,8 +685,41 @@ function drawMap(){
  setTimeout(()=>state.map.invalidateSize(),80);
 }
 function supportView(){
- const mine=state.support||[]; const isAdmin=state.profile.role==="admin";
- return `<section class="title"><div class="eyebrow">CUSTOMER CARE</div><h1>How can we help?</h1><p>Contact CivicFix when a reported issue is not progressing, needs clarification, or you need assistance with a civic service.</p><button class="primary" onclick="openSupport()">Contact Customer Care</button></section><section class="section"><div class="support-grid">${mine.length?mine.map(t=>supportCard(t,isAdmin)).join(""):'<div class="empty">No support requests yet. If a civic issue needs attention, contact Customer Care.</div>'}</div></section>`;
+  const mine=state.support||[];
+  const isAdmin=state.profile.role==="admin";
+
+  return `
+    <section class="title">
+      <div class="eyebrow">CUSTOMER CARE</div>
+      <h1>How can we help?</h1>
+      <p>
+        ${
+          isAdmin
+          ? "Review and respond to requests from residents."
+          : "Contact CivicFix when a reported issue is not progressing, needs clarification, or you need assistance with a civic service."
+        }
+      </p>
+      ${
+        !isAdmin
+        ? `<button class="primary" onclick="openSupport()">Contact Customer Care</button>`
+        : ""
+      }
+    </section>
+
+    <section class="section">
+      <div class="support-grid">
+        ${
+          mine.length
+          ? mine.map(t=>supportCard(t,isAdmin)).join("")
+          : `<div class="empty">${
+              isAdmin
+              ? "No Customer Care requests are currently open."
+              : "No support requests yet. If a civic issue needs attention, contact Customer Care."
+            }</div>`
+        }
+      </div>
+    </section>
+  `;
 }
 function supportCard(t,admin=false){
 
@@ -654,78 +808,86 @@ async function respondSupport(id){const t=state.support.find(x=>x.id===id);if(!t
 function report(){
   gpsCoords=null;
 
-  // Hide the dashboard map while the report form is open
-  document.querySelectorAll(".mapbox").forEach(el=>{
-    el.dataset.wasVisible=el.style.display;
-    el.style.display="none";
-  });
-
   document.body.insertAdjacentHTML("beforeend",`
-            <label>
-          District
-          <select id="district" required>
-            ${JHARKHAND_DISTRICTS.map(x=>`
-              <option value="${x[0]}">${x[0]}</option>
-            `).join("")}
+    <div class="modal" id="reportModal">
+      <form class="modalcard" id="reportForm">
+        <button type="button" class="close" onclick="closeReport()">×</button>
+
+        <div class="eyebrow">NEW REPORT</div>
+        <h2>Report a civic issue</h2>
+
+        <label>
+          Issue category
+          <select id="cat" required>
+            ${categories.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("")}
           </select>
         </label>
+
         <label>
           District
           <select id="district" required>
-           const area = $("#area").value.trim();
-const district = $("#district").value;
-const local_type = $("#localType").value;
+            ${JHARKHAND_DISTRICTS.map(x=>`
+              <option value="${esc(x[0])}">${esc(x[0])}</option>
+            `).join("")}
+          </select>
+        </label>
 
-const photoInput = $("#photo");
-const photoFile = photoInput?.files?.[0] || null;
-
-if (!photoFile) {
-  throw new Error("Please attach a photo before submitting the complaint.");
-}
+        <label>
+          Local body type
+          <select id="localType" required>
+            ${JHARKHAND_URBAN_TYPES.map(x=>`
+              <option value="${esc(x)}">${esc(x)}</option>
+            `).join("")}
           </select>
         </label>
 
         <label>
           Locality / landmark
           <div class="locrow">
-            <input id="area"
-                   placeholder="City / locality / landmark"
-                   required>
-            <button type="button"
-                    class="secondary"
-                    onclick="useGPS()">
+            <input
+              id="area"
+              placeholder="City / locality / landmark"
+              required
+            >
+            <button
+              type="button"
+              class="secondary"
+              onclick="useGPS()">
               ⌖ Use GPS
             </button>
           </div>
         </label>
 
-        <div id="gpsmsg"
-             class="notice"
-             style="display:none">
-        </div>
+        <div id="gpsmsg" class="notice" style="display:none"></div>
 
         <label>
           Description
-          <textarea id="desc"
-                    rows="5"
-                    placeholder="What happened? Mention danger, school, hospital, flooding etc. when relevant."
-                    required></textarea>
+          <textarea
+            id="desc"
+            rows="5"
+            placeholder="What happened? Mention danger, school, hospital, flooding etc. when relevant."
+            required
+          ></textarea>
         </label>
 
         <label>
           Photo evidence
-          <input id="photo"
-                 type="file"
-                 accept="image/*"
-                 capture="environment">
+          <input
+            id="photo"
+            type="file"
+            accept="image/*"
+            capture="environment"
+          >
+          <div class="muted" style="margin-top:6px;">
+            Optional. Maximum size: 5 MB.
+          </div>
         </label>
 
         <div id="rerr"></div>
 
-        <button class="primary wide">
+        <button class="primary wide" type="submit">
           Submit complaint
         </button>
-
       </form>
     </div>
   `);
@@ -756,110 +918,122 @@ let gpsCoords=null;
 function useGPS(){const box=$("#gpsmsg");box.style.display="block";if(!navigator.geolocation){box.textContent="This device does not support GPS.";return}box.textContent="Requesting location…";navigator.geolocation.getCurrentPosition(p=>{gpsCoords=[p.coords.latitude,p.coords.longitude];$("#area").value=`${p.coords.latitude.toFixed(6)}, ${p.coords.longitude.toFixed(6)}`;box.textContent=`GPS captured · accuracy ±${Math.round(p.coords.accuracy||0)} m`},e=>{box.textContent=e.code===1?"Location permission denied. Allow location access and try again.":"Location unavailable."},{enableHighAccuracy:true,timeout:15000,maximumAge:0})}
 async function submitReport(e){
   e.preventDefault();
-const btn = e.submitter;
-  btn.disabled = true;
-  btn.textContent = "Submitting...";
 
-  try {
-    const category = $("#cat").value;
-    const description = $("#desc").value.trim();
-    const area = $("#area").value.trim();
-    const district = $("#district").value;
-    const local_type = $("#localType").value;
-const photoInput = $("#photo");
-const photoFile = photoInput?.files?.[0] || null;
-if (!photoFile) {
-  throw new Error("Please attach a photo before submitting the complaint.");
-}
+  const btn=e.submitter;
+  btn.disabled=true;
+  btn.textContent="Submitting...";
 
-    const score =
+  try{
+    const category=$("#cat").value;
+    const description=$("#desc").value.trim();
+    const area=$("#area").value.trim();
+    const district=$("#district").value;
+    const local_type=$("#localType").value;
+
+    if(!category || !description || !area || !district || !local_type){
+      throw new Error("Please complete all required fields.");
+    }
+
+    const photoInput=$("#photo");
+    const photoFile=photoInput?.files?.[0] || null;
+
+    const score=
       ({"Pothole / Road":65,
         "Open Drainage":60,
         "Water Leakage":58,
         "Garbage / Waste":55}[category] || 35)
       +
-      (/accident|danger|school|hospital|blocked|flood|injur|emergency/i.test(description) ? 20 : 0);
+      (/accident|danger|school|hospital|blocked|flood|injur|emergency/i.test(description)
+        ? 20
+        : 0);
 
-    let photo_url = null;
+    let photo_url=null;
 
-    /* Upload evidence photo if one was selected */
-    if (photoFile) {
-
-      if (!photoFile.type.startsWith("image/")) {
+    if(photoFile){
+      if(!photoFile.type.startsWith("image/")){
         throw new Error("Please select a valid image file.");
       }
 
-      if (photoFile.size > 5 * 1024 * 1024) {
+      if(photoFile.size>5*1024*1024){
         throw new Error("Photo must be smaller than 5 MB.");
       }
 
-      const extension =
-        photoFile.name.split(".").pop().toLowerCase();
+      const originalName=photoFile.name || "photo.jpg";
+      const parts=originalName.split(".");
+      const extension=(parts.length>1 ? parts.pop() : "jpg")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g,"") || "jpg";
 
-      const filePath =
+      const filePath=
         `${state.session.user.id}/${crypto.randomUUID()}.${extension}`;
 
-      const { error: uploadError } =
-        await sb.storage
-          .from("complaint-evidence")
-          .upload(filePath, photoFile, {
-            cacheControl: "3600",
-            upsert: false,
-            contentType: photoFile.type
-          });
+      const {error:uploadError}=await sb.storage
+        .from("complaint-evidence")
+        .upload(filePath,photoFile,{
+          cacheControl:"3600",
+          upsert:false,
+          contentType:photoFile.type
+        });
 
-      if (uploadError) {
-        throw uploadError;
+      if(uploadError){
+        throw new Error("Photo upload failed: "+uploadError.message);
       }
 
-      const { data: publicData } =
-        sb.storage
-          .from("complaint-evidence")
-          .getPublicUrl(filePath);
+      const {data:publicData}=sb.storage
+        .from("complaint-evidence")
+        .getPublicUrl(filePath);
 
-      photo_url = publicData.publicUrl;
+      if(!publicData?.publicUrl){
+        throw new Error("Photo was uploaded but its public URL could not be created.");
+      }
+
+      photo_url=publicData.publicUrl;
     }
 
-    /* Create complaint */
-    const { error } = await sb
+    const {error}=await sb
       .from("complaints")
       .insert({
-        citizen_id: state.session.user.id,
+        citizen_id:state.session.user.id,
         category,
         area,
         district,
-        local_body_type: local_type,
+        local_body_type:local_type,
         description,
-        latitude: gpsCoords?.[0] ?? null,
-        longitude: gpsCoords?.[1] ?? null,
-        priority: score >= 75 ? "High" : score >= 50 ? "Medium" : "Low",
-        priority_score: Math.min(100, score),
-        department: departments[category],
-        status: "Pending",
+        latitude:gpsCoords?.[0] ?? null,
+        longitude:gpsCoords?.[1] ?? null,
+        priority:score>=75 ? "High" : score>=50 ? "Medium" : "Low",
+        priority_score:Math.min(100,score),
+        department:departments[category],
+        status:"Pending",
         photo_url
       });
 
-    if (error) {
+    if(error){
       throw error;
     }
 
     closeReport();
-
     await loadComplaints();
-
     render();
 
     alert("Complaint submitted successfully.");
 
-  } catch (x) {
+  }catch(x){
+    console.error("Complaint submission failed:",x);
 
-    $("#rerr").innerHTML =
-      '<div class="error">' + esc(x.message) + '</div>';
+    const errBox=$("#rerr");
 
-    btn.disabled = false;
-    btn.textContent = "Submit complaint";
+    if(errBox){
+      errBox.innerHTML='<div class="error">'+esc(x.message)+'</div>';
+    }else{
+      alert(x.message);
+    }
+
+    btn.disabled=false;
+    btn.textContent="Submit complaint";
   }
 }
+
 async function assign(id){const {data,error}=await sb.from("profiles").select("id,name").eq("role","worker").limit(1).single();if(error)return alert("No worker account is available.");const u=await sb.from("complaints").update({assigned_worker_id:data.id,status:"Assigned"}).eq("id",id);if(u.error)return alert(u.error.message);await loadComplaints();render()}
 async function changeStatus(id,status){const {error}=await sb.from("complaints").update({status}).eq("id",id);if(error)return alert(error.message);await loadComplaints();render()}
 async function logout(){await sb.auth.signOut();state={session:null,profile:null,view:"citizen",complaints:[],support:[]};auth()}
