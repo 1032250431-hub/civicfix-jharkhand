@@ -1237,6 +1237,13 @@ button:disabled{cursor:not-allowed;opacity:.62}
 .cf-access-actions .primary{
   min-height:40px;
 }
+.cf-access-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  cursor:pointer;
+}
 .cf-access-note{
   display:flex;
   gap:12px;
@@ -2067,10 +2074,12 @@ function cfAccessCard(item){
         <p>${esc(item.description)}</p>
         <div class="cf-access-source">${esc(item.source)}</div>
         <div class="cf-access-actions">
-          <button class="primary" type="button"
-            onclick="window.open(${JSON.stringify(item.url)},'_blank','noopener,noreferrer')">
+          <a class="primary cf-access-link"
+             href="${esc(item.url)}"
+             target="_blank"
+             rel="noopener noreferrer">
             ${esc(item.action)} ↗
-          </button>
+          </a>
         </div>
       </div>
     </article>`;
