@@ -1434,17 +1434,26 @@ body.cf-transition-lock{overflow:hidden!important}
 }
 
 </style>
+<div id="cfTransitionLayer" aria-hidden="true"><div id="cfTransitionOrb"></div></div>
 </head>
 <body><div id="app"></div>
-<div id="cfTransitionLayer" aria-hidden="true"><div id="cfTransitionOrb"></div></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+
+
+function cfKeepTransitionLayerRoot(){
+  const layer=document.getElementById("cfTransitionLayer");
+  if(layer && layer.parentElement!==document.documentElement){
+    document.documentElement.appendChild(layer);
+  }
+}
 
 /* =========================================================
    CIVICFIX — ORIGIN TRANSITION CONTROLLER
    ========================================================= */
 let cfTransitionBusy=false;
+window.addEventListener("DOMContentLoaded",cfKeepTransitionLayerRoot);
 
 function cfTransitionPoint(source){
   const rect=source?.getBoundingClientRect?.();
@@ -1468,9 +1477,16 @@ function cfTransitionPoint(source){
 
 function cfTransition(source){
   if(cfTransitionBusy) return;
-  const layer=document.getElementById("cfTransitionLayer");
-  const orb=document.getElementById("cfTransitionOrb");
-  if(!layer||!orb) return;
+  let layer=document.getElementById("cfTransitionLayer");
+  if(!layer){
+    layer=document.createElement("div");
+    layer.id="cfTransitionLayer";
+    layer.setAttribute("aria-hidden","true");
+    layer.innerHTML='<div id="cfTransitionOrb"></div>';
+    document.documentElement.appendChild(layer);
+  }
+  const orb=layer.querySelector("#cfTransitionOrb");
+  if(!orb) return;
 
   const p=cfTransitionPoint(source);
   const diagonal=Math.hypot(window.innerWidth,window.innerHeight);
