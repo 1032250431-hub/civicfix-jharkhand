@@ -1082,6 +1082,214 @@ button:disabled{cursor:not-allowed;opacity:.62}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
 
+
+/* =========================================================
+   CIVIC ACCESS — LIQUID GLASS
+   ========================================================= */
+.cf-access-hero{
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:1.45fr .55fr;
+  gap:22px;
+  align-items:center;
+  padding:34px;
+  border-radius:32px;
+  border:1px solid rgba(255,255,255,.90);
+  background:
+    radial-gradient(circle at 78% 22%,rgba(76,154,255,.20),transparent 30%),
+    linear-gradient(135deg,rgba(255,255,255,.72),rgba(232,243,255,.45));
+  box-shadow:
+    0 25px 65px rgba(31,91,176,.12),
+    inset 0 1px rgba(255,255,255,.98);
+  -webkit-backdrop-filter:blur(30px) saturate(175%);
+  backdrop-filter:blur(30px) saturate(175%);
+}
+.cf-access-hero h1{
+  max-width:760px;
+  margin:7px 0 10px;
+  font-size:clamp(36px,5vw,66px);
+  line-height:.98;
+  letter-spacing:-.065em;
+}
+.cf-access-hero p{
+  max-width:720px;
+  color:#5d6b80;
+  line-height:1.65;
+}
+.cf-access-trust{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:18px;
+}
+.cf-access-trust span{
+  padding:8px 11px;
+  border-radius:999px;
+  background:rgba(255,255,255,.48);
+  border:1px solid rgba(255,255,255,.82);
+  box-shadow:inset 0 1px rgba(255,255,255,.95);
+  font-size:10px;
+  font-weight:850;
+}
+.cf-access-orb{
+  width:180px;
+  height:180px;
+  margin:auto;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 25%,rgba(255,255,255,.78),rgba(83,157,255,.18));
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 0 70px rgba(45,131,246,.18),inset 0 1px rgba(255,255,255,1);
+  -webkit-backdrop-filter:blur(25px);
+  backdrop-filter:blur(25px);
+}
+.cf-access-orb-inner{
+  width:92px;
+  height:92px;
+  display:grid;
+  place-items:center;
+  border-radius:28px;
+  color:white;
+  font-size:48px;
+  font-weight:950;
+  background:linear-gradient(145deg,#2d83f6,#1769e0);
+  box-shadow:0 20px 45px rgba(23,105,224,.28),inset 0 1px rgba(255,255,255,.35);
+}
+.cf-access-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.cf-access-card{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:14px;
+  min-width:0;
+  padding:19px;
+  border-radius:25px;
+  border:1px solid rgba(255,255,255,.88);
+  background:linear-gradient(135deg,rgba(255,255,255,.67),rgba(234,245,255,.43));
+  box-shadow:0 18px 45px rgba(31,91,176,.09),inset 0 1px rgba(255,255,255,.95);
+  -webkit-backdrop-filter:blur(26px) saturate(165%);
+  backdrop-filter:blur(26px) saturate(165%);
+  transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s ease;
+}
+.cf-access-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 25px 55px rgba(31,91,176,.13),0 0 28px rgba(45,131,246,.06),inset 0 1px rgba(255,255,255,1);
+}
+.cf-access-icon{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:17px;
+  color:#1769e0;
+  background:rgba(221,237,255,.72);
+  border:1px solid rgba(255,255,255,.86);
+  box-shadow:0 8px 22px rgba(23,105,224,.10),inset 0 1px rgba(255,255,255,.9);
+  font-size:21px;
+  font-weight:950;
+}
+.cf-access-top{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+}
+.cf-access-category{
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:#1769e0;
+}
+.cf-official{
+  padding:4px 7px;
+  border-radius:999px;
+  font-size:8px;
+  font-weight:900;
+  background:rgba(225,249,236,.72);
+  color:#197044;
+  border:1px solid rgba(255,255,255,.78);
+}
+.cf-access-card h3{
+  margin:7px 0 5px;
+  font-size:17px;
+}
+.cf-access-card p{
+  margin:0;
+  color:#667085;
+  font-size:12px;
+  line-height:1.55;
+}
+.cf-access-source{
+  margin-top:10px;
+  font-size:9px;
+  font-weight:800;
+  color:#78869a;
+}
+.cf-access-actions{
+  margin-top:13px;
+}
+.cf-access-actions .primary{
+  min-height:40px;
+}
+.cf-access-note{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  padding:16px 18px;
+  border-radius:22px;
+  background:rgba(255,255,255,.43);
+  border:1px solid rgba(255,255,255,.76);
+  box-shadow:inset 0 1px rgba(255,255,255,.95);
+}
+.cf-access-note-icon{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:10px;
+  background:rgba(221,237,255,.72);
+  color:#1769e0;
+  font-weight:950;
+}
+.cf-access-note p{
+  margin:4px 0 0;
+  color:#667085;
+  font-size:11px;
+  line-height:1.55;
+}
+@media(max-width:800px){
+  .cf-access-hero{
+    grid-template-columns:1fr;
+    padding:23px 17px;
+    border-radius:27px;
+  }
+  .cf-access-orb{
+    width:120px;
+    height:120px;
+  }
+  .cf-access-orb-inner{
+    width:64px;
+    height:64px;
+    border-radius:20px;
+    font-size:34px;
+  }
+  .cf-access-grid{
+    grid-template-columns:1fr;
+  }
+  .cf-access-card{
+    border-radius:23px;
+  }
+  .cf-access-actions .primary{
+    width:100%;
+  }
+}
+
 </style>
 </head>
 <body><div id="app"></div>
@@ -1285,6 +1493,18 @@ function nav(){
         }
 
         ${
+          state.profile.role==="citizen"
+          ?
+          `<button
+            class="nav-access ${state.view==="access"?"active":""}"
+            onclick="openCivicAccess()">
+            Civic Access
+          </button>`
+          :
+          ""
+        }
+
+        ${
           state.profile.role==="citizen" ||
           state.profile.role==="admin"
           ?
@@ -1309,7 +1529,7 @@ function nav(){
     </div>
 
   </header>`;
-}function render(){document.body.innerHTML=nav()+`<main class="page">${state.view==="citizen"?citizen():state.view==="admin"?admin():state.view==="worker"?worker():supportView()}</main>`;drawMap()}
+}function render(){document.body.innerHTML=nav()+`<main class="page">${state.view==="citizen"?citizen():state.view==="admin"?admin():state.view==="worker"?worker():state.view==="access"?civicAccess():supportView()}</main>`;drawMap()}
 function citizen(){const x=state.complaints.filter(c=>c.citizen_id===state.session.user.id);return `<section class="hero"><div><div class="eyebrow">CITIZEN PORTAL</div><h1>Report what needs fixing.</h1><p>Photo + location + description. CivicFix converts a local problem into a trackable civic case.</p><button class="primary" onclick="report()">＋ Report an issue</button></div>${mapBox(x)}</section><section class="section"><h2>My reports</h2><p class="muted">Track every issue you have submitted.</p><div class="cards">${x.length?x.map(card).join(""):'<div class="empty">No reports yet. Your first civic report starts here.</div>'}</div></section>`}
 function admin(){const x=state.complaints;return `<section class="title"><div class="eyebrow">OPERATIONS</div><h1>Admin dashboard</h1><p>Live Jharkhand queue, priorities, duplicate signals and worker assignment.</p></section>${cfAdminEscalationSummary()}<div class="stats"><div class="stat"><b>${x.length}</b><span>Total</span></div><div class="stat"><b>${x.filter(c=>c.status==="Pending").length}</b><span>Pending</span></div><div class="stat"><b>${x.filter(c=>c.priority==="High").length}</b><span>High priority</span></div><div class="stat"><b>${x.filter(c=>c.status==="Resolved").length}</b><span>Resolved</span></div></div>${mapBox(x)}<section class="section"><div class="cards">${x.map(c=>card(c,true)).join("")||'<div class="empty">No complaints yet.</div>'}</div></section>${cfAdminEscalationSection()}<section class="section"><div class="between"><div><h2>Customer Care</h2><p class="muted">Requests needing assistance from residents.</p></div><button class="secondary" onclick="state.view='support';render()">Open support queue</button></div></section>`}
 function worker(){const x=state.complaints.filter(c=>c.assigned_worker_id===state.profile.id||!c.assigned_worker_id);return `<section class="title"><div class="eyebrow">FIELD WORKER</div><h1>Work queue</h1><p>Open the case, navigate to the location and update progress from your phone.</p></section>${mapBox(x)}<section class="section"><div class="cards">${x.map(card).join("")||'<div class="empty">No assigned jobs.</div>'}</div></section>`}
@@ -1777,6 +1997,130 @@ function cfAdminEscalationSection(){
    End escalation engine
    =========================================================
 */
+
+
+/* =========================================================
+   CIVIC ACCESS
+   Official government discovery + navigation layer.
+   No database dependency. Existing application logic is untouched.
+   ========================================================= */
+
+const CF_CIVIC_ACCESS = [
+  {
+    id:"myscheme",
+    title:"Find government schemes",
+    category:"Benefits & Welfare",
+    icon:"✦",
+    description:"Discover Central and State/UT schemes and check which ones may be relevant to you.",
+    source:"myScheme · Government of India",
+    url:"https://www.myscheme.gov.in/",
+    action:"Explore schemes"
+  },
+  {
+    id:"jharsewa",
+    title:"Jharkhand citizen services",
+    category:"Certificates & Services",
+    icon:"⌘",
+    description:"Access Jharkhand e-District services including certificates, pensions and other citizen services.",
+    source:"JharSewa · Government of Jharkhand",
+    url:"https://jharsewa.jharkhand.gov.in/",
+    action:"Open JharSewa"
+  },
+  {
+    id:"govservices",
+    title:"Government service finder",
+    category:"All Services",
+    icon:"⌕",
+    description:"Search government services by category, location and service type.",
+    source:"National Government Services Portal · NIC",
+    url:"https://services.india.gov.in/",
+    action:"Find a service"
+  },
+  {
+    id:"schemes",
+    title:"Government schemes",
+    category:"Official schemes",
+    icon:"◇",
+    description:"Browse official schemes across education, health, housing, jobs, welfare and more.",
+    source:"National Portal of India",
+    url:"https://www.india.gov.in/my-government/schemes",
+    action:"Browse schemes"
+  }
+];
+
+function openCivicAccess(){
+  state.view="access";
+  render();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function cfAccessCard(item){
+  return `
+    <article class="cf-access-card">
+      <div class="cf-access-icon">${item.icon}</div>
+      <div class="cf-access-main">
+        <div class="cf-access-top">
+          <span class="cf-access-category">${esc(item.category)}</span>
+          <span class="cf-official">Official source</span>
+        </div>
+        <h3>${esc(item.title)}</h3>
+        <p>${esc(item.description)}</p>
+        <div class="cf-access-source">${esc(item.source)}</div>
+        <div class="cf-access-actions">
+          <button class="primary" type="button"
+            onclick="window.open(${JSON.stringify(item.url)},'_blank','noopener,noreferrer')">
+            ${esc(item.action)} ↗
+          </button>
+        </div>
+      </div>
+    </article>`;
+}
+
+function civicAccess(){
+  return `
+    <section class="cf-access-hero">
+      <div>
+        <div class="eyebrow">CIVIC ACCESS</div>
+        <h1>Government services, without the hunt.</h1>
+        <p>Find official schemes and citizen services from one place, understand what may be relevant to you, and continue directly to the responsible government portal.</p>
+
+        <div class="cf-access-trust">
+          <span>✓ Official sources</span>
+          <span>✓ Eligibility guidance</span>
+          <span>✓ Direct government portals</span>
+        </div>
+      </div>
+
+      <div class="cf-access-orb" aria-hidden="true">
+        <div class="cf-access-orb-inner">C</div>
+      </div>
+    </section>
+
+    <section class="section cf-access-section">
+      <div class="between">
+        <div>
+          <div class="eyebrow">DISCOVER</div>
+          <h2>Services & benefits</h2>
+          <p class="muted">Start with an official government source.</p>
+        </div>
+      </div>
+
+      <div class="cf-access-grid">
+        ${CF_CIVIC_ACCESS.map(cfAccessCard).join("")}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="cf-access-note">
+        <div class="cf-access-note-icon">i</div>
+        <div>
+          <b>CivicFix helps you find the right door.</b>
+          <p>Eligibility, approvals and applications remain with the responsible government department or official portal. CivicFix does not promise eligibility or priority access.</p>
+        </div>
+      </div>
+    </section>`;
+}
+
 
 function report(){
   gpsCoords=null;
