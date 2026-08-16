@@ -136,22 +136,114 @@ async function hydrate(){
   await loadComplaints();
   await loadSupport();
 }
- await loadSupport();
-}
-async function loadComplaints(){
- let q=sb.from("complaints").select("*,profiles:citizen_id(name,email)").order("created_at",{ascending:false});
- const {data,error}=await q;if(!error)state.complaints=data||[];
-}
-async function loadSupport(){
- let q=sb.from("support_requests").select("*,complaints:complaint_id(category,area,status)").order("created_at",{ascending:false});
- if(state.profile.role==="citizen")q=q.eq("user_id",state.session.user.id);
- const {data,error}=await q;if(!error)state.support=data||[];
-}
-function splash(){document.body.innerHTML='<div style="min-height:100vh;display:grid;place-items:center;background:#1769e0;color:white;text-align:center"><div><div class="logo" style="background:white;color:#1769e0;margin:auto">C</div><h1>CivicFix</h1><p>Report · Route · Resolve · Verify</p></div></div>'}
-function setup(){document.body.innerHTML='<div class="auth"><section class="visual"><div class="eyebrow" style="color:#fff">CIVICFIX</div><h1>Service configuration required.</h1><p>CivicFix is temporarily unavailable because its service connection has not been configured.</p></section><section class="authcard"><div class="logo">C</div><h2>Backend not connected</h2><p class="muted">This is intentionally fail-safe. CivicFix will never pretend that a database is connected when it is not.</p><div class="notice">Please configure the CivicFix service connection before continuing.</div></section></div>'}
 function auth(){
- document.body.innerHTML=`<div class="auth"><section class="visual"><div class="eyebrow" style="color:#fff">JHARKHAND CIVIC PLATFORM</div><h1>Make your neighbourhood better.</h1><p>Report civic problems with location and evidence. CivicFix routes them to the right team and keeps the citizen in the loop until the fix is verified.</p><div class="flow"><b>Report</b><b>Prioritize</b><b>Route</b><b>Resolve</b><b>Verify</b></div></section><form class="authcard" id="login"><div class="logo">C</div><h2>Sign in to CivicFix</h2><label>Email<input id="email" type="email" placeholder="Enter your email address" required></label><label>Password<input id="pass" type="password" placeholder="Enter your password" required></label><div id="err"></div><button class="primary wide">Sign in</button><button type="button" class="link" onclick="signup()">Create a citizen account</button><div class="notice">Citizen accounts are available to residents. Staff accounts are managed by authorized personnel.</div></form></div>`;
- $("#login").onsubmit=async e=>{e.preventDefault();try{const {data,error}=await sb.auth.signInWithPassword({email:$("#email").value,password:$("#pass").value});if(error)throw error;state.session=data.session;await hydrate();render()}catch(x){$("#err").innerHTML='<div class="error">'+esc(x.message)+'</div>'}}
+  document.body.innerHTML=`
+    <div class="auth">
+      <section class="visual">
+        <div class="eyebrow" style="color:#fff">JHARKHAND CIVIC PLATFORM</div>
+        <h1>Make your neighbourhood better.</h1>
+        <p>
+          Report civic problems with location and evidence.
+          CivicFix routes them to the right team and keeps the citizen
+          in the loop until the fix is verified.
+        </p>
+
+        <div class="flow">
+          <b>Report</b>
+          <b>Prioritize</b>
+          <b>Route</b>
+          <b>Resolve</b>
+          <b>Verify</b>
+        </div>
+      </section>
+
+      <form class="authcard" id="login">
+        <div class="logo">C</div>
+
+        <h2>Sign in to CivicFix</h2>
+
+        <label>
+          Email
+          <input
+            id="email"
+            type="email"
+            placeholder="Enter your email address"
+            required
+          >
+        </label>
+
+        <label>
+          Password
+          <input
+            id="pass"
+            type="password"
+            placeholder="Enter your password"
+            required
+          >
+        </label>
+
+        <div id="err"></div>
+
+        <button class="primary wide">
+          Sign in
+        </button>
+
+        <button
+          type="button"
+          class="link"
+          onclick="signup()"
+        >
+          Create a citizen account
+        </button>
+
+        <div class="notice">
+          Citizen accounts are available to residents.
+          Staff accounts are managed by authorized personnel.
+        </div>
+      </form>
+    </div>
+  `;
+
+  $("#login").onsubmit=async e=>{
+    e.preventDefault();
+
+    try{
+      const {data,error}=await sb.auth.signInWithPassword({
+        email:$("#email").value.trim(),
+        password:$("#pass").value
+      });
+
+      if(error) throw error;
+
+      state.session=data.session;
+
+      await hydrate();
+      render();
+
+    }catch(x){
+      $("#err").innerHTML=
+        '<div class="error">'+esc(x.message)+'</div>';
+    }
+  };
+}
+
+
+async function loadComplaints(){
+
+  let q=sb
+    .from("complaints")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  const {data,error}=await q;
+
+  if(error){
+    console.error("Complaint loading failed:",error);
+    state.complaints=[];
+    return;
+  }
+
+  state.complaints=data||[];
 }
 
 function signup(){
@@ -569,32 +661,27 @@ function report(){
   });
 
   document.body.insertAdjacentHTML("beforeend",`
-    <div class="modal" id="reportModal">
-      <form class="modalcard" id="reportForm">
-
-        <button type="button" class="close" onclick="closeReport()">×</button>
-
-        <div class="eyebrow">NEW REPORT</div>
-        <h2>Report a civic issue</h2>
-
-        <label>
-          Issue category
-          <select id="cat">
-            ${categories.map(x=>`<option>${x}</option>`).join("")}
+            <label>
+          District
+          <select id="district" required>
+            ${JHARKHAND_DISTRICTS.map(x=>`
+              <option value="${x[0]}">${x[0]}</option>
+            `).join("")}
           </select>
         </label>
-
         <label>
           District
           <select id="district" required>
-            ${JHARKHAND_DISTRICTS.map(x=>`<option value="${x[0]}">${x[0]}</option>`).join("")}
-          </select>
-        </label>
+           const area = $("#area").value.trim();
+const district = $("#district").value;
+const local_type = $("#localType").value;
 
-        <label>
-          Local body type
-          <select id="localType">
-            ${JHARKHAND_URBAN_TYPES.map(x=>`<option>${x}</option>`).join("")}
+const photoInput = $("#photo");
+const photoFile = photoInput?.files?.[0] || null;
+
+if (!photoFile) {
+  throw new Error("Please attach a photo before submitting the complaint.");
+}
           </select>
         </label>
 
