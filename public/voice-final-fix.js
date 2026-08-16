@@ -1,4 +1,4 @@
-/* CivicFix Voice Final — graceful fallback when Sarvam is not configured. */
+/* CivicFix Voice Final — mobile-safe browser fallback with duplicate-result protection. */
 (function(){
   "use strict";
   const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -7,45 +7,13 @@
   const status=(text,type="")=>{const x=$("cfVoiceStatus");if(x){x.className="cf-voice-status"+(type?" "+type:"");x.textContent=text}};
   const timer=s=>{const x=$("cfVoiceTimer");if(x)x.textContent=`00:${String(Math.max(0,Math.floor(s))).padStart(2,"0")}`};
   function setButton(text,fn,disabled=false){const b=$("cfVoiceStart");if(!b)return;b.disabled=disabled;b.onclick=fn;b.innerHTML=`<span class="cf-voice-main"><span class="cf-voice-dot"></span><span>${text}</span></span>`}
-  async function checkServer(){
-    try{const r=await fetch("/api/voice-transcribe",{method:"POST",headers:{"Content-Type":"audio/webm"},body:new Blob([],{type:"audio/webm"}),cache:"no-store"});serverReady=r.status!==503}catch(_){serverReady=null}
-    applyMode();
-  }
-  function applyMode(){
-    if(serverReady!==false)return;
-    if(!SpeechRecognition){status("Voice service needs server setup. You can type the complaint below.","error");return}
-    const b=$("cfVoiceStart");if(!b)return;
-    b.onclick=startBrowser;b.disabled=false;b.innerHTML='<span class="cf-voice-main"><span class="cf-voice-dot"></span><span>Start voice report</span></span>';
-    status("Voice service is offline right now — using browser voice input instead.");
-  }
-  function startBrowser(){
-    if(listening){stopBrowser();return}
-    try{
-      recognition=new SpeechRecognition();recognition.continuous=true;recognition.interimResults=true;recognition.maxAlternatives=1;
-      recognition.lang=(navigator.language&&/^(hi|bn|en)/i.test(navigator.language))?navigator.language:"hi-IN";
-      let finalText="";
-      recognition.onstart=()=>{listening=true;$("cfVoiceBox")?.classList.add("recording");setButton("Stop & use transcript",stopBrowser);status("Listening… speak naturally about the issue.","live");let t=0;recognition.__timer=setInterval(()=>timer(++t),1000)};
-      recognition.onresult=e=>{let interim="";for(let i=e.resultIndex;i<e.results.length;i++){const text=e.results[i][0].transcript;if(e.results[i].isFinal)finalText+=text+" ";else interim+=text}const p=$("cfVoiceText");if(p)p.textContent=(finalText+interim).trim()};
-      recognition.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed")status("Microphone permission was denied. Allow microphone access and try again.","error");else status("Voice input could not be completed. Please try again or type the complaint.","error");finishBrowser(finalText)};
-      recognition.onend=()=>{if(listening)finishBrowser(finalText)};recognition.start();
-    }catch(_){status("Browser voice input is unavailable. Please type the complaint below.","error")}
-  }
-  function stopBrowser(){try{recognition?.stop()}catch(_){} }
-  function finishBrowser(text){
-    if(!listening&&text===undefined)return;
-    listening=false;const r=recognition;if(r?.__timer)clearInterval(r.__timer);recognition=null;$("cfVoiceBox")?.classList.remove("recording");transcript=(text||$("cfVoiceText")?.textContent||"").trim();timer(0);
-    if(!transcript){status("No speech was detected. Please try again.","error");setButton("Try voice again",startBrowser);return}
-    if($("cfVoiceText"))$("cfVoiceText").textContent=transcript;if($("cfVoiceLang"))$("cfVoiceLang").textContent="Browser voice input · review before submitting";
-    $("cfVoicePreview")?.classList.add("show");$("cfVoiceActions")?.classList.add("show");setButton("Record again",startBrowser);status("Transcript ready. Review it before submitting.","success");
-  }
+  async function checkServer(){try{const r=await fetch("/api/voice-transcribe",{method:"POST",headers:{"Content-Type":"audio/webm"},body:new Blob([],{type:"audio/webm"}),cache:"no-store"});serverReady=r.status!==503}catch(_){serverReady=null}applyMode()}
+  function applyMode(){if(serverReady!==false)return;if(!SpeechRecognition){status("Voice service needs server setup. You can type the complaint below.","error");return}const b=$("cfVoiceStart");if(!b)return;b.onclick=startBrowser;b.disabled=false;b.innerHTML='<span class="cf-voice-main"><span class="cf-voice-dot"></span><span>Start voice report</span></span>';status("Voice service is offline right now — using browser voice input instead.")}
+  function collapseRepeatedSegments(parts){const clean=parts.map(x=>(x||"").replace(/\s+/g," ").trim()).filter(Boolean),out=[];for(const part of clean){const prev=out[out.length-1]||"",a=part.toLowerCase().replace(/[.,!?।]+$/g,""),b=prev.toLowerCase().replace(/[.,!?।]+$/g,"");if(!b){out.push(part);continue}if(a===b)continue;if(a.startsWith(b+" ")){out[out.length-1]=part;continue}if(b.startsWith(a+" "))continue;const wa=a.split(" "),wb=b.split(" ");let overlap=0;for(let n=Math.min(10,wa.length,wb.length);n>=3;n--){if(wa.slice(0,n).join(" ")===wb.slice(-n).join(" ")){overlap=n;break}}if(overlap){out[out.length-1]=prev+" "+wa.slice(overlap).join(" ");continue}out.push(part)}return out.join(" ").replace(/\s+([,!?।])/g,"$1").trim()}
+  function startBrowser(){if(listening){stopBrowser();return}try{recognition=new SpeechRecognition();recognition.continuous=true;recognition.interimResults=true;recognition.maxAlternatives=1;recognition.lang=(navigator.language&&/^(hi|bn|en)/i.test(navigator.language))?navigator.language:"hi-IN";let resultParts=new Map(),interim="",lastRendered="";recognition.onstart=()=>{listening=true;$("cfVoiceBox")?.classList.add("recording");setButton("Stop & use transcript",stopBrowser);status("Listening… speak naturally about the issue.","live");let t=0;recognition.__timer=setInterval(()=>timer(++t),1000)};recognition.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){const text=(e.results[i][0]?.transcript||"").trim();if(!text)continue;if(e.results[i].isFinal)resultParts.set(i,text);else interim=text}const finalText=collapseRepeatedSegments([...resultParts.keys()].sort((a,b)=>a-b).map(i=>resultParts.get(i))),display=collapseRepeatedSegments([finalText,interim]);if(display&&display!==lastRendered){lastRendered=display;const p=$("cfVoiceText");if(p)p.textContent=display}};recognition.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed")status("Microphone permission was denied. Allow microphone access and try again.","error");else if(e.error!=="aborted")status("Voice input could not be completed. Please try again or type the complaint.","error");finishBrowser(collapseRepeatedSegments([...resultParts.keys()].sort((a,b)=>a-b).map(i=>resultParts.get(i))))};recognition.onend=()=>{if(listening)finishBrowser(collapseRepeatedSegments([...resultParts.keys()].sort((a,b)=>a-b).map(i=>resultParts.get(i))))};recognition.start()}catch(_){status("Browser voice input is unavailable. Please type the complaint below.","error")}}
+  function stopBrowser(){try{recognition?.stop()}catch(_){}}
+  function finishBrowser(text){if(!listening)return;listening=false;const r=recognition;if(r?.__timer)clearInterval(r.__timer);recognition=null;$("cfVoiceBox")?.classList.remove("recording");transcript=collapseRepeatedSegments([text||$("cfVoiceText")?.textContent||""]);timer(0);if(!transcript){status("No speech was detected. Please try again.","error");setButton("Try voice again",startBrowser);return}if($("cfVoiceText"))$("cfVoiceText").textContent=transcript;if($("cfVoiceLang"))$("cfVoiceLang").textContent="Browser voice input · review before submitting";$("cfVoicePreview")?.classList.add("show");$("cfVoiceActions")?.classList.add("show");setButton("Record again",startBrowser);status("Transcript ready. Review it before submitting.","success")}
   function use(){const d=$("desc");if(!d||!transcript)return;d.value=d.value.trim()?`${d.value.trim()}\n${transcript}`:transcript;d.dispatchEvent(new Event("input",{bubbles:true}));$("cfVoicePreview")?.classList.remove("show");$("cfVoiceActions")?.classList.remove("show");status("Transcript added to the description. Please review it.","success");d.focus()}
-  function wire(box){
-    if(!box||box.dataset.voiceFinalFixWired==="1")return;
-    box.dataset.voiceFinalFixWired="1";
-    const useBtn=box.querySelector("#cfVoiceActions button");if(useBtn)useBtn.onclick=use;
-    checkServer();
-  }
-  const obs=new MutationObserver(()=>{const box=$("cfVoiceBox");if(box)wire(box)});
-  if(document.body)obs.observe(document.body,{childList:true,subtree:true});
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>wire($("cfVoiceBox")));else wire($("cfVoiceBox"));
+  function wire(box){if(!box||box.dataset.voiceFinalFixWired==="1")return;box.dataset.voiceFinalFixWired="1";const useBtn=box.querySelector("#cfVoiceActions button");if(useBtn)useBtn.onclick=use;checkServer()}
+  const obs=new MutationObserver(()=>{const box=$("cfVoiceBox");if(box)wire(box)});if(document.body)obs.observe(document.body,{childList:true,subtree:true});if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>wire($("cfVoiceBox")));else wire($("cfVoiceBox"));
 })();
