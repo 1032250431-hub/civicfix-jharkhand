@@ -12,6 +12,6 @@
     .then(()=>load("/final-product-cleanup.js?v=2026-08-17-product1"))
     .then(()=>load("/duplicate-stack-final.js?v=2026-08-17-stack4"))
     .then(()=>load("/voice-final-fix.js?v=2026-08-17-voice4"))
-    .then(()=>load("/install-pwa.js?v=2026-08-17-pwa1"))
+    .then(()=>load("/install-pwa.js?v=2026-08-17-pwa5"))
     .catch(err=>console.error("CivicFix master layers failed to load",err));
 })();
