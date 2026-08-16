@@ -5,7 +5,9 @@ const path = require("path");
 const PORT = process.env.PORT || 10000;
 const root = path.join(__dirname, "public");
 const MAX_VOICE_BYTES = 8 * 1024 * 1024;
-const VOICE_BUILD = "2026-08-16-motion2";
+const ASSET_BUILD = "2026-08-16-final1";
+let lastGeocodeAt = 0;
+const geocodeCache = new Map();
 
 const mime = {
   ".html": "text/html; charset=utf-8",
@@ -128,6 +130,51 @@ async function transcribeVoice(req, res) {
   } finally { clearTimeout(timeout); }
 }
 
+async function geocodeAddress(req, res) {
+  const raw = new URL(req.url, `http://${req.headers.host || "localhost"}`).searchParams.get("q") || "";
+  const query = raw.trim().replace(/\s+/g, " ");
+  if (query.length < 3) return sendJson(res, 400, { error: "Please enter a little more location detail." });
+  if (query.length > 240) return sendJson(res, 400, { error: "Location text is too long." });
+
+  const key = query.toLowerCase();
+  const cached = geocodeCache.get(key);
+  if (cached && Date.now() - cached.at < 24 * 60 * 60 * 1000) return sendJson(res, 200, cached.data);
+
+  const wait = Date.now() - lastGeocodeAt;
+  if (wait < 1000) return sendJson(res, 429, { error: "Address lookup is briefly rate-limited. Please try again in a second." });
+  lastGeocodeAt = Date.now();
+
+  const endpoint = `https://geocode.xyz/?locate=${encodeURIComponent(query)}&region=IN&json=1`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  try {
+    const response = await fetch(endpoint, {
+      headers: {
+        "Accept": "application/json",
+        "User-Agent": "CivicFix-Jharkhand/1.0 civic-reporting-demo"
+      },
+      signal: controller.signal
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) return sendJson(res, 502, { error: "The address service is temporarily unavailable." });
+    if (data?.error || !data?.latt || !data?.longt) {
+      return sendJson(res, 404, { error: data?.error?.description || "That address could not be located. Try adding the city or district." });
+    }
+    const result = {
+      latitude: Number(data.latt),
+      longitude: Number(data.longt),
+      display_name: data.altgeocode || data.staddress || [data.city, data.prov, data.countryname].filter(Boolean).join(", ") || query
+    };
+    if (!Number.isFinite(result.latitude) || !Number.isFinite(result.longitude)) return sendJson(res, 404, { error: "That address could not be located." });
+    geocodeCache.set(key, { at: Date.now(), data: result });
+    return sendJson(res, 200, result);
+  } catch (err) {
+    if (err?.name === "AbortError") return sendJson(res, 504, { error: "Address lookup timed out. Please try again." });
+    console.error("Geocoding request failed", err);
+    return sendJson(res, 502, { error: "Address lookup is temporarily unavailable." });
+  } finally { clearTimeout(timeout); }
+}
+
 function serveFile(res, file, p) {
   if (!fs.existsSync(file) || !fs.statSync(file).isFile()) return false;
   let body = fs.readFileSync(file);
@@ -135,10 +182,10 @@ function serveFile(res, file, p) {
 
   if (p === "/index.html" && ext === ".html") {
     const html = body.toString("utf8");
-    body = Buffer.from(html.replace("</body>", `<script src="/voice.js?v=${VOICE_BUILD}"></script></body>`), "utf8");
+    body = Buffer.from(html.replace("</body>", `<script src="/final-polish.js?v=${ASSET_BUILD}"></script><script src="/voice.js?v=${ASSET_BUILD}"></script></body>`), "utf8");
   }
 
-  const cache = p === "/index.html" || p === "/voice.js" ? "no-store" : "public,max-age=3600";
+  const cache = p === "/index.html" || p === "/voice.js" || p === "/final-polish.js" ? "no-store" : "public,max-age=3600";
   res.writeHead(200, { "Content-Type": mime[ext] || "application/octet-stream", "Cache-Control": cache });
   res.end(body);
   return true;
@@ -151,6 +198,10 @@ http.createServer(async (req, res) => {
   if (p === "/api/voice-transcribe") {
     if (req.method !== "POST") { res.setHeader("Allow", "POST"); return sendJson(res, 405, { error: "Method not allowed." }); }
     return transcribeVoice(req, res);
+  }
+  if (p === "/api/geocode") {
+    if (req.method !== "GET") { res.setHeader("Allow", "GET"); return sendJson(res, 405, { error: "Method not allowed." }); }
+    return geocodeAddress(req, res);
   }
   if (req.method !== "GET" && req.method !== "HEAD") return sendJson(res, 405, { error: "Method not allowed." });
   const normalized = p === "/" ? "/index.html" : p;
