@@ -671,6 +671,7 @@ async function submitReport(e){
     const photoInput = $("#photo");
 const photoInput = $("#photo");
 const photoFile = photoInput?.files?.[0] || null;
+    alert(photoFile ? "PHOTO DETECTED" : "NO PHOTO DETECTED");
 
 if (!photoFile) {
   throw new Error("Please attach a photo before submitting the complaint.");
