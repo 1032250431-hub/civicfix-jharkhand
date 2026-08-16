@@ -15,5 +15,6 @@
     .then(()=>load("/legacy-ui-cleanup.js?v=2026-08-17-cleanup1"))
     .then(()=>load("/duplicate-apple-final.js?v=2026-08-17-widgetstack1"))
     .then(()=>load("/duplicate-stack-polish.js?v=2026-08-17-stack3"))
+    .then(()=>load("/final-product-cleanup.js?v=2026-08-17-product1"))
     .catch(err=>console.error("CivicFix master layers failed to load",err));
 })();
