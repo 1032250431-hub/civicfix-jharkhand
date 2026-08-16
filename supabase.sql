@@ -88,6 +88,36 @@ create policy "citizen verifies own resolved complaint" on public.complaints for
 using(citizen_id=auth.uid() and status='Resolved')
 with check(citizen_id=auth.uid() and status='Verified');
 
+-- Citizen resolution feedback: allow only Resolved -> In Progress on their own case.
+-- A trigger prevents citizens from changing any other complaint field in the same update.
+create or replace function public.guard_citizen_reopen()
+returns trigger
+language plpgsql
+security definer set search_path=public
+as $$
+begin
+  if public.current_role()='citizen' then
+    if old.citizen_id <> auth.uid()
+       or old.status <> 'Resolved'
+       or new.citizen_id <> old.citizen_id
+       or new.status <> 'In Progress'
+       or to_jsonb(new) - 'status' - 'updated_at' <> to_jsonb(old) - 'status' - 'updated_at' then
+      raise exception 'Citizen may only move their own resolved complaint back to In Progress';
+    end if;
+  end if;
+  return new;
+end; $$;
+
+drop trigger if exists citizen_reopen_guard on public.complaints;
+create trigger citizen_reopen_guard
+before update on public.complaints
+for each row execute function public.guard_citizen_reopen();
+
+drop policy if exists "citizen reports unresolved resolution" on public.complaints;
+create policy "citizen reports unresolved resolution" on public.complaints for update
+using(citizen_id=auth.uid() and status='Resolved')
+with check(citizen_id=auth.uid() and status='In Progress');
+
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path=public
 as $$
@@ -104,11 +134,8 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users
 for each row execute procedure public.handle_new_user();
 
--- Photo storage bucket. The current demo UI stores GPS + report data; this bucket is ready
--- for the next photo-upload step and can be restricted further with Storage RLS.
 insert into storage.buckets(id,name,public) values('complaint-photos','complaint-photos',false)
 on conflict(id) do nothing;
-
 
 -- Jharkhand-specific routing reference:
 -- The Government of Jharkhand currently lists 24 districts in 5 divisions.
