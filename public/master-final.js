@@ -12,5 +12,6 @@
     .then(()=>load("/dashboard-final.js?v=2026-08-16-dashboard3"))
     .then(()=>load("/customer-care-dedupe.js?v=2026-08-16-cc1"))
     .then(()=>load("/duplicate-final.js?v=2026-08-17-dupdeck1"))
+    .then(()=>load("/legacy-ui-cleanup.js?v=2026-08-17-cleanup1"))
     .catch(err=>console.error("CivicFix master layers failed to load",err));
 })();
